@@ -1,5 +1,5 @@
 import requests
-from cinema.Parser import Parser
+from Parser import Parser
 
 class Request:
     def __init__(self):

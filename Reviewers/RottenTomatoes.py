@@ -1,4 +1,4 @@
-from cinema.Reviewers.Reviewer import Reviewer
+from Reviewers.Reviewer import Reviewer
 
 
 class RottenTomatoes(Reviewer):

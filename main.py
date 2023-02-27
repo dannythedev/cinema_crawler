@@ -1,11 +1,11 @@
-from cinema.Archive import Archive
+from Archive import Archive
 import time
 from threading import Thread
 
-from cinema.Reviewers.IMDB import IMDB
-from cinema.Reviewers.Metacritic import Metacritic
-from cinema.Reviewers.RottenTomatoes import RottenTomatoes
-from cinema.Cinemas.YesPlanet import YesPlanet
+from Reviewers.IMDB import IMDB
+from Reviewers.Metacritic import Metacritic
+from Reviewers.RottenTomatoes import RottenTomatoes
+from Cinemas.YesPlanet import YesPlanet
 
 if __name__ == "__main__":
     start = time.time()

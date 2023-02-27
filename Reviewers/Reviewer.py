@@ -1,4 +1,4 @@
-from cinema.Request import Request
+from Request import Request
 
 
 class Reviewer(Request):

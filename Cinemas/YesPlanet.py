@@ -1,7 +1,7 @@
 import json
-from cinema.Cinemas.Cinema import Cinema
-from cinema.Parser import regexify
-from cinema.Movie import Movie
+from Cinemas.Cinema import Cinema
+from Parser import regexify
+from Movie import Movie
 
 
 class YesPlanet(Cinema):
