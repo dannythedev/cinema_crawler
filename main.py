@@ -7,7 +7,7 @@ from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
 from Cinemas.YesPlanet import YesPlanet
 
-if __name__ == "__main__":
+def get_json():
     start = time.time()
     cinema = YesPlanet()
     archive = Archive(movies=cinema.get_movies())
@@ -16,15 +16,12 @@ if __name__ == "__main__":
     threads = []
 
     for reviewer in reviewers:
-        threads.append(Thread(target=reviewer.initialize, args=[archive.movies]))
-
-    for thread in threads:
-        thread.start()
-
-    for thread in threads:
-        thread.join()
+        reviewer.initialize(archive.movies)
 
     archive.sort_by_rating()
     archive.export_json()
     print('Time:', time.time()-start)
+
+if __name__ == "__main__":
+    get_json()
 
