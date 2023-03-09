@@ -3,6 +3,7 @@ from Request import Request
 
 class Reviewer(Request):
     def __init__(self):
+        self.progress = 0
         super().__init__()
 
     def get_rating(self, movie):
@@ -13,5 +14,6 @@ class Reviewer(Request):
         for movie in movies_list:
             try:
                 self.get_rating(movie)
+                self.progress += 1
             except:
                 pass
