@@ -40,6 +40,7 @@ class RecursiveJSONViewer(tk.Frame):
         self.collapse_button.destroy()
         self.expand_button.destroy()
         self.loading_screen.destroy()
+        [button.destroy() for button in self.checklist_buttons]
         self.loading_screen = None
 
     def create_widgets(self):
@@ -62,11 +63,15 @@ class RecursiveJSONViewer(tk.Frame):
         self.collapse_button.pack(side='left')
 
         style = ttk.Style(self.master)
-        style.theme_use('clam')  # Use a pre-defined theme to modify
+        # Set style for modern look
+        style.theme_use('clam')
+        style.configure('Treeview', font=('Arial', 12))
 
         # Set new colors for the treeview widget
         style.configure('Treeview', background='#333', fieldbackground='#333', foreground='white')
         style.map('Treeview', background=[('selected', '#555')], foreground=[('selected', 'white')])
+
+        self.add_checklist(['RottenTomatoes', 'Metacritic', 'IMDB'])
 
         # Define a new button style for dark mode
         style.configure('DarkButton.TButton', background='#555', foreground='white', borderwidth=0, focuscolor='#555')
@@ -122,7 +127,7 @@ class RecursiveJSONViewer(tk.Frame):
             self.load_button["state"] = tk.DISABLED
             print("Starting.")
             start = time.time()
-            self.archive = Archive()
+            self.archive = Archive(reviewers=self.get_checked_items())
             self.archive.initialize()
             self.destroy_widgets()
             self.create_widgets()
@@ -145,6 +150,22 @@ class RecursiveJSONViewer(tk.Frame):
             self.master.clipboard_clear()
             self.master.clipboard_append(text)
 
+    def get_checked_items(self):
+        checked_items = []
+        for item in self.checklist:
+            if item[1].get() == 1:
+                checked_items.append(item[0])
+        return checked_items
+
+    def add_checklist(self, items):
+        self.checklist = []
+        self.checklist_buttons = []
+        for item in items:
+            var = tk.IntVar()
+            checkbutton = ttk.Checkbutton(self.master, text=item, variable=var)
+            checkbutton.pack(side='left', padx=5, pady=2)
+            self.checklist.append((item, var))
+            self.checklist_buttons.append(checkbutton)
 
 def read_json():
     f = open('movies.json', 'r')
@@ -162,5 +183,6 @@ if __name__ == '__main__':
     root.title('Movie Rating Scrapper')
     root.geometry('400x600')
     viewer = RecursiveJSONViewer(root)
+
     viewer.load_json(json_data)
     root.mainloop()
