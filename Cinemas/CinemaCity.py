@@ -1,10 +1,6 @@
-import json
-
 import bs4
-
 from Cinemas.Cinema import Cinema
 from Functions import is_english
-from Parser import regexify
 from Movie import Movie
 from lxml import etree
 
@@ -29,7 +25,7 @@ class CinemaCity(Cinema):
             if title:
                 title = str(title[0])
                 if is_english(title):
-                    movies_list.append(Movie(title=title,
+                    movies_list.append(Movie(title=title.lower(),
                                              suffix=title.replace(' ','-').lower(),
                                              trailer='',
                                              genre=[],

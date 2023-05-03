@@ -23,9 +23,4 @@ class Parser:
         return self.soup.find(string)
 
 
-def regexify(regex, data):
-    """Extracts regex string from data string."""
-    try:
-        return re.findall(regex, data)[0]
-    except:
-        return
+

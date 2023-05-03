@@ -1,7 +1,6 @@
 import json
 from Cinemas.Cinema import Cinema
-from Functions import is_english
-from Parser import regexify
+from Functions import is_english, regexify
 from Movie import Movie
 
 
@@ -13,7 +12,7 @@ class YesPlanet(Cinema):
     def get_movies(self):
         response = super().get(self.url)
         movies = json.loads(response.text)['body']['posters']
-        return [Movie(title=x['featureTitle'],
+        return [Movie(title=x['featureTitle'].lower(),
                       suffix=regexify(regex='films/(.*)/', data=x['url']),
                       image=x['mediaList'][-2]['url'],
                       trailer=x['mediaList'][-1]['url'],

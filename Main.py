@@ -4,14 +4,14 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import json
 from Archive import Archive
-from Parser import regexify
+from Functions import regexify
 
 
 class LoadingScreen(tk.Toplevel):
     def __init__(self, master, max_value=100):
         super().__init__(master)
         self.title('Retrieving movies...')
-        self.geometry('300x80')
+        self.geometry('300x120')
         self.resizable(False, False)
         self.max_value = max_value
         self.create_widgets()
@@ -46,7 +46,7 @@ class RecursiveJSONViewer(tk.Frame):
     def create_widgets(self):
         self.tree = ttk.Treeview(self)
         self.tree.pack(fill='both', expand=True)
-        self.tree.heading('#0', text='Results')
+        self.tree.heading('#0', text='\n\n\n')
         self.pack(fill='both', expand=True)
 
         self.tree.pack(side='top', fill='both', expand=True)
@@ -71,7 +71,7 @@ class RecursiveJSONViewer(tk.Frame):
         style.configure('Treeview', background='#333', fieldbackground='#333', foreground='white')
         style.map('Treeview', background=[('selected', '#555')], foreground=[('selected', 'white')])
 
-        self.add_checklist(['Cinema City', 'Yes Planet','RottenTomatoes', 'Metacritic', 'IMDB'])
+        self.add_checklist(['RottenTomatoes', 'Metacritic', 'IMDB', 'CinemaCity', 'YesPlanet', 'HotCinema'])
         # Define a new button style for dark mode
         style.configure('DarkButton.TButton', background='#555', foreground='white', borderwidth=0, focuscolor='#555')
 
@@ -159,10 +159,15 @@ class RecursiveJSONViewer(tk.Frame):
     def add_checklist(self, items):
         self.checklist = []
         self.checklist_buttons = []
+        c=0
         for item in items:
+            c+=1
             var = tk.IntVar()
             checkbutton = ttk.Checkbutton(self.master, text=item, variable=var)
-            checkbutton.pack(side='left', padx=1, pady=1)
+            if c>3:
+                checkbutton.place(x=20, y=10+17*(c-4))
+            else:
+                checkbutton.place(x=150, y=10+17*(c-1))
             self.checklist.append((item, var))
             self.checklist_buttons.append(checkbutton)
 

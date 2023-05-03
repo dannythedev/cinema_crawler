@@ -2,6 +2,8 @@ import json
 import threading
 from Cinemas.YesPlanet import YesPlanet
 from Cinemas.CinemaCity import CinemaCity
+from Cinemas.HotCinema import HotCinema
+
 from Functions import combine_duplicates
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
@@ -12,8 +14,9 @@ from Reviewers.RottenTomatoes import RottenTomatoes
 class Archive:
     def __init__(self, checklist=[]):
         cinemas = []
-        movies_dict = {'Cinema City': CinemaCity(),
-                       'Yes Planet': YesPlanet()}
+        movies_dict = {'CinemaCity': CinemaCity(),
+                       'YesPlanet': YesPlanet(),
+                       'HotCinema': HotCinema()}
         for key in movies_dict.keys():
             if key in checklist:
                 cinemas.append(movies_dict[key])
