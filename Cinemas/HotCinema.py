@@ -1,10 +1,9 @@
 import json
 
-import bs4
 from Cinemas.Cinema import Cinema
 from Functions import is_english, regexify
 from Movie import Movie
-from lxml import etree
+
 
 class HotCinema(Cinema):
     def __init__(self):

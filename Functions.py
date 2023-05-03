@@ -12,6 +12,7 @@ def is_english(text):
     return bool(re.match('^[a-zA-Z0-9\s!@#$%^&*(),.?":{}|<>_-]*$', text))
 
 def combine_duplicates(dicts):
+    # TODO: Fix this. This messes up rating when various Cinemas are selected.
     # Create an empty dictionary to store the combined dictionaries
     combined = {}
     for dictionary in dicts:
