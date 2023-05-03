@@ -1,5 +1,6 @@
 import json
 from Cinemas.Cinema import Cinema
+from Functions import is_english
 from Parser import regexify
 from Movie import Movie
 
@@ -16,4 +17,5 @@ class YesPlanet(Cinema):
                       suffix=regexify(regex='films/(.*)/', data=x['url']),
                       image=x['mediaList'][-2]['url'],
                       trailer=x['mediaList'][-1]['url'],
-                      genre=self.filter_categories_in_list(x['attributes'])) for x in movies]
+                      genre=self.filter_categories_in_list(x['attributes']),
+                      origin='Yes Planet') for x in movies if is_english(x['featureTitle'])]

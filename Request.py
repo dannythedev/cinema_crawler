@@ -7,9 +7,10 @@ class Request:
         self.html = Parser()
         self.url = NotImplemented
         self.headers = {}
+        self.params = {}
 
     def get(self, url):
-        response = requests.get(url=url, headers=self.headers)
+        response = requests.get(url=url, headers=self.headers, params=self.params)
         if response.status_code == 404:
             return
         self.html.set(response)

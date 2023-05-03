@@ -1,5 +1,5 @@
 class Movie:
-    def __init__(self, title, suffix, image, trailer, genre):
+    def __init__(self, title, suffix, image, trailer, genre, origin):
         self.title = title
         self.suffix = suffix
         self.image = image
@@ -7,6 +7,7 @@ class Movie:
         self.total_rating = 0
         self.rating = dict()
         self.genre = genre
+        self.origin = origin
 
     def accumulate_rating(self):
         """Calculates rating average out of all reviewer scores."""

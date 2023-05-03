@@ -1,20 +1,30 @@
 import json
 import threading
 from Cinemas.YesPlanet import YesPlanet
+from Cinemas.CinemaCity import CinemaCity
+from Functions import combine_duplicates
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
 
 
+
 class Archive:
-    def __init__(self, reviewers=[]):
-        self.movies = YesPlanet().get_movies()
+    def __init__(self, checklist=[]):
+        cinemas = []
+        movies_dict = {'Cinema City': CinemaCity(),
+                       'Yes Planet': YesPlanet()}
+        for key in movies_dict.keys():
+            if key in checklist:
+                cinemas.append(movies_dict[key])
+        self.movies = [cinema.get_movies() for cinema in cinemas]
+        self.movies = [item for sublist in self.movies for item in sublist] #flatten.
         self.reviewers = []
         reviewers_dict = {'Metacritic': Metacritic(),
                      'RottenTomatoes': RottenTomatoes(),
                      'IMDB': IMDB()}
         for key in reviewers_dict.keys():
-            if key in reviewers:
+            if key in checklist:
                 self.reviewers.append(reviewers_dict[key])
         self.progress = 0
 
@@ -40,7 +50,7 @@ class Archive:
         """Gets progress of current pages scanned against total pages."""
         current = sum([reviewer.progress for reviewer in self.reviewers])
         total = len(self.movies) * (len(self.reviewers))
-        return int(current / total * 100)
+        return int(current / total * 100) if total != 0 else 100
 
     def sort_by_rating(self):
         """Calculates total rating for each movie in Archive, then sorts them by this value."""
@@ -50,7 +60,7 @@ class Archive:
     def export_json(self):
         """Exports data as a JSON file."""
         [delattr(movie, 'suffix') for movie in self.movies]
-        dumps = json.dumps([movie.__dict__ for movie in self.movies], indent=4)
+        dumps = json.dumps(combine_duplicates([movie.__dict__ for movie in self.movies]), indent=4)
         f = open('movies.json', 'w')
         f.write(dumps)
         f.close()

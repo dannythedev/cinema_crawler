@@ -71,8 +71,7 @@ class RecursiveJSONViewer(tk.Frame):
         style.configure('Treeview', background='#333', fieldbackground='#333', foreground='white')
         style.map('Treeview', background=[('selected', '#555')], foreground=[('selected', 'white')])
 
-        self.add_checklist(['RottenTomatoes', 'Metacritic', 'IMDB'])
-
+        self.add_checklist(['Cinema City', 'Yes Planet','RottenTomatoes', 'Metacritic', 'IMDB'])
         # Define a new button style for dark mode
         style.configure('DarkButton.TButton', background='#555', foreground='white', borderwidth=0, focuscolor='#555')
 
@@ -127,7 +126,7 @@ class RecursiveJSONViewer(tk.Frame):
             self.load_button["state"] = tk.DISABLED
             print("Starting.")
             start = time.time()
-            self.archive = Archive(reviewers=self.get_checked_items())
+            self.archive = Archive(checklist=self.get_checked_items())
             self.archive.initialize()
             self.destroy_widgets()
             self.create_widgets()
@@ -163,7 +162,7 @@ class RecursiveJSONViewer(tk.Frame):
         for item in items:
             var = tk.IntVar()
             checkbutton = ttk.Checkbutton(self.master, text=item, variable=var)
-            checkbutton.pack(side='left', padx=5, pady=2)
+            checkbutton.pack(side='left', padx=1, pady=1)
             self.checklist.append((item, var))
             self.checklist_buttons.append(checkbutton)
 
@@ -171,7 +170,6 @@ def read_json():
     f = open('movies.json', 'r')
     try:
         json_data = json.loads(f.read())
-
     except:
         json_data = {}
     f.close()
