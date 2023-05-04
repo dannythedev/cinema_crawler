@@ -3,12 +3,9 @@ import threading
 from Cinemas.YesPlanet import YesPlanet
 from Cinemas.CinemaCity import CinemaCity
 from Cinemas.HotCinema import HotCinema
-
-from Functions import combine_duplicates
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
-
 
 
 class Archive:
@@ -20,12 +17,26 @@ class Archive:
         for key in movies_dict.keys():
             if key in checklist:
                 cinemas.append(movies_dict[key])
-        self.movies = [cinema.get_movies() for cinema in cinemas]
-        self.movies = [item for sublist in self.movies for item in sublist] #flatten.
+        self.movies = []
+        for cinema in cinemas:
+            self.movies += cinema.get_movies()
+
+        unique_list = dict()
+        # Iterate over each item in the original list
+        for item in self.movies:
+            # Check if the item is already in the unique list
+            if item.title not in list(unique_list.keys()):
+                # If it's not, add it to the unique list
+                unique_list.update({item.title : item})
+            else:
+                if item.origin not in unique_list[item.title].origin:
+                    unique_list[item.title].origin += ', '+item.origin
+        self.movies = list(unique_list.values())
+
         self.reviewers = []
         reviewers_dict = {'Metacritic': Metacritic(),
-                     'RottenTomatoes': RottenTomatoes(),
-                     'IMDB': IMDB()}
+                          'RottenTomatoes': RottenTomatoes(),
+                          'IMDB': IMDB()}
         for key in reviewers_dict.keys():
             if key in checklist:
                 self.reviewers.append(reviewers_dict[key])
@@ -63,7 +74,7 @@ class Archive:
     def export_json(self):
         """Exports data as a JSON file."""
         [delattr(movie, 'suffix') for movie in self.movies]
-        dumps = json.dumps(combine_duplicates([movie.__dict__ for movie in self.movies]), indent=4)
+        dumps = json.dumps([movie.__dict__ for movie in self.movies], indent=4)
         f = open('movies.json', 'w')
         f.write(dumps)
         f.close()
