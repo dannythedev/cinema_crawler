@@ -13,10 +13,14 @@ class CinemaCity(Cinema):
 
     def get_movies(self):
         movies = []
-        for x in range(0,12):
+        for x in range(0, 20):
             self.params['page'] += 1
             response = super().get(self.url)
-            movies += self.html.get_xpath("//div[@class='col-lg-3 col-md-4 col-sm-4 col-6 movie-thumb']")
+            page_movies = self.html.get_xpath("//div[@class='col-lg-3 col-md-4 col-sm-4 col-6 movie-thumb']")
+            if page_movies:
+                movies += page_movies
+            else:
+                break
         movies = [etree.tostring(x, pretty_print=True) for x in movies]
         movies_list = []
         for response_text in movies:
