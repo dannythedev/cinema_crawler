@@ -20,3 +20,9 @@ def estimate_time(start_time, current_item, total_items):
     items_left = total_items - current_item
     time_left = int(items_left / items_per_second)
     return '{0} seconds left.'.format(time_left) if time_left < 120 else '{0} minutes left.'.format(time_left//60)
+
+def convert_time(time_str):
+    # Extract the number of minutes from the input string
+    minutes = int(re.match(r'(\d+) min', time_str).group(1))
+    hours, minutes = minutes // 60, minutes % 60
+    return '{}h {}m'.format(hours, minutes)

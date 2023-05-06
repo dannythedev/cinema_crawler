@@ -12,8 +12,8 @@ class Archive:
     def __init__(self, checklist=[]):
         self.current, self.total = 0, 0
         cinemas = []
-        movies_dict = {'CinemaCity': CinemaCity(),
-                       'YesPlanet': YesPlanet(),
+        movies_dict = {'YesPlanet': YesPlanet(),
+                       'CinemaCity': CinemaCity(),
                        'HotCinema': HotCinema()}
         for key in movies_dict.keys():
             if key in checklist:

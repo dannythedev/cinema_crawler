@@ -2,6 +2,7 @@ class Movie:
     def __init__(self, title, suffix, image, trailer, genre, origin):
         self.title = title
         self.suffix = suffix
+        self.duration = None
         self.image = image
         self.trailer = trailer
         self.total_rating = 0
