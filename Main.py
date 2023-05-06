@@ -1,9 +1,10 @@
+import os
 import threading
 import time
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
-from Archive import Archive
+from Archive import Archive, EXPORT_FILE
 from Functions import regexify
 
 
@@ -11,13 +12,13 @@ class LoadingScreen(tk.Toplevel):
     def __init__(self, master, max_value=100):
         super().__init__(master)
         self.title('Retrieving movies...')
-        self.geometry('300x120')
+        self.geometry('300x75')
         self.resizable(False, False)
         self.max_value = max_value
         self.create_widgets()
 
     def create_widgets(self):
-        self.label = tk.Label(self, text='Retrieving Movies...\n This may take awhile.')
+        self.label = tk.Label(self, text='Fetching Films...')
         self.label.pack(pady=5)
 
         self.progressbar = ttk.Progressbar(self, orient='horizontal', length=200, mode='determinate')
@@ -172,7 +173,10 @@ class RecursiveJSONViewer(tk.Frame):
             self.checklist_buttons.append(checkbutton)
 
 def read_json():
-    f = open('movies.json', 'r')
+    if not os.path.exists(EXPORT_FILE):
+        with open(EXPORT_FILE, 'w') as f:
+            f.write('[]')
+    f = open(EXPORT_FILE, 'r')
     try:
         json_data = json.loads(f.read())
     except:

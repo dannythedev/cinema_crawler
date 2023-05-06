@@ -18,5 +18,5 @@ class IMDB(Reviewer):
             self.get(self.url + url)
         else:
             return
-        rating = self.html.get_xpath("//span[@class='sc-e457ee34-1 gvYTvP']/text()")[0]
+        rating = self.html.get_xpath("//span[@class='sc-bde20123-1 iZlgcd']/text()")[0]
         movie.rating.update({'IMDB Score': int(float(rating) * 10)})

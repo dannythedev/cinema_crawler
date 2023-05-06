@@ -6,7 +6,7 @@ from Cinemas.HotCinema import HotCinema
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
-
+EXPORT_FILE = 'movies.json'
 
 class Archive:
     def __init__(self, checklist=[]):
@@ -75,6 +75,6 @@ class Archive:
         """Exports data as a JSON file."""
         [delattr(movie, 'suffix') for movie in self.movies]
         dumps = json.dumps([movie.__dict__ for movie in self.movies], indent=4)
-        f = open('movies.json', 'w')
+        f = open(EXPORT_FILE, 'w')
         f.write(dumps)
         f.close()
