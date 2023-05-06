@@ -11,8 +11,8 @@ class Request:
 
     def get(self, url):
         response = requests.get(url=url, headers=self.headers, params=self.params)
+        self.html.set(response)
         if response.status_code == 404:
             return
-        self.html.set(response)
         return response
 
