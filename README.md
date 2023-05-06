@@ -1,3 +1,3 @@
-# movie_rating_scrapper
-This repository takes current movies from cinema APIs and scraps their rating values in IMDB, RottenTomatoes and Metacritic.
+# cinema_crawler
+This repository takes current movie titles from local Israeli Cinema (Yes Planet, Cinema City and Hot Cinema) APIs and summerizes their rating values, along with other attributes, in IMDB, RottenTomatoes and Metacritic.
 The code sorts their total rating and exports it as a JSON.
