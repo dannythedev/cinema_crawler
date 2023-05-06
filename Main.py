@@ -5,32 +5,34 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import json
 from Archive import Archive, EXPORT_FILE
-from Functions import regexify
+from Functions import regexify, estimate_time
 
 
 class LoadingScreen(tk.Toplevel):
     def __init__(self, master, max_value=100):
         super().__init__(master)
-        self.title('Retrieving movies...')
-        self.geometry('300x75')
+        self.title('Loading...')
+        self.geometry('300x90')
         self.resizable(False, False)
         self.max_value = max_value
         self.create_widgets()
 
     def create_widgets(self):
-        self.label = tk.Label(self, text='Fetching Films...')
+        self.label = tk.Label(self, text='Fetching Current Films from Cinemas...\n')
         self.label.pack(pady=5)
 
         self.progressbar = ttk.Progressbar(self, orient='horizontal', length=200, mode='determinate')
         self.progressbar.pack(pady=5)
 
-    def set_progress(self, value):
+    def set_progress(self, value, estimated_time):
         self.progressbar['value'] = value
+        self.label.config(text='Fetching Rating from Reviewers...\nEstimated Time: {0}'.format(estimated_time))
 
 class RecursiveJSONViewer(tk.Frame):
     def __init__(self, master=None, **kw):
         super().__init__(master, **kw)
         self.master = master
+        self.start_time = 0
         self.create_widgets()
         self.archive = None
         self.loading_screen = None
@@ -114,10 +116,12 @@ class RecursiveJSONViewer(tk.Frame):
 
     def refresh(self):
         self.master.update()
-        self.master.after(1000,self.refresh)
+        self.master.after(750,self.refresh)
         if self.loading_screen is not None:
             if self.archive is not None:
-                self.loading_screen.set_progress(self.archive.get_progress())
+                estimate_timed = estimate_time(
+                    start_time=self.start_time, current_item=self.archive.current + 1, total_items=self.archive.total)
+                self.loading_screen.set_progress(value=self.archive.get_progress(), estimated_time=estimate_timed)
                 self.master.update_idletasks()
 
     def start(self):
@@ -126,14 +130,13 @@ class RecursiveJSONViewer(tk.Frame):
         def get_json():
             self.load_button["state"] = tk.DISABLED
             print("Starting.")
-            start = time.time()
+            self.start_time = time.time()
             self.archive = Archive(checklist=self.get_checked_items())
             self.archive.initialize()
             self.destroy_widgets()
             self.create_widgets()
             self.load_json(read_json())
             self.load_button["state"] = tk.NORMAL
-            print('Time:', time.time() - start)
 
         threading.Thread(target=get_json).start()
         self.loading_screen = LoadingScreen(self.master)
@@ -187,7 +190,7 @@ def read_json():
 if __name__ == '__main__':
     json_data = read_json()
     root = tk.Tk()
-    root.title('Movie Rating Scrapper')
+    root.title('Cinema Crawler')
     root.geometry('400x600')
     viewer = RecursiveJSONViewer(root)
 

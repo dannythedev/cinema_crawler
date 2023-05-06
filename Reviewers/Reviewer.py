@@ -14,6 +14,6 @@ class Reviewer(Request):
         for movie in movies_list:
             try:
                 self.get_rating(movie)
-                self.progress += 1
             except:
                 pass
+            self.progress += 1

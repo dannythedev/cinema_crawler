@@ -10,6 +10,7 @@ EXPORT_FILE = 'movies.json'
 
 class Archive:
     def __init__(self, checklist=[]):
+        self.current, self.total = 0, 0
         cinemas = []
         movies_dict = {'CinemaCity': CinemaCity(),
                        'YesPlanet': YesPlanet(),
@@ -62,9 +63,9 @@ class Archive:
 
     def get_progress(self):
         """Gets progress of current pages scanned against total pages."""
-        current = sum([reviewer.progress for reviewer in self.reviewers])
-        total = len(self.movies) * (len(self.reviewers))
-        return int(current / total * 100) if total != 0 else 100
+        self.current = sum([reviewer.progress for reviewer in self.reviewers])
+        self.total = len(self.movies) * (len(self.reviewers))
+        return int(self.current / self.total * 100) if self.total != 0 else 100
 
     def sort_by_rating(self):
         """Calculates total rating for each movie in Archive, then sorts them by this value."""
