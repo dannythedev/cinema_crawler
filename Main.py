@@ -4,9 +4,13 @@ import time
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
+from PIL import Image, ImageTk
 from Archive import Archive, EXPORT_FILE
 from Functions import regexify, estimate_time
 
+def tkinter_img(path):
+    img = Image.open(path)
+    return ImageTk.PhotoImage(img)
 
 class LoadingScreen(tk.Toplevel):
     def __init__(self, master, max_value=100):
@@ -49,7 +53,7 @@ class RecursiveJSONViewer(tk.Frame):
     def create_widgets(self):
         self.tree = ttk.Treeview(self)
         self.tree.pack(fill='both', expand=True)
-        self.tree.heading('#0', text='\n\n\n')
+        self.tree.heading('#0', text='\n\n\n\n',anchor='w')
         self.pack(fill='both', expand=True)
 
         self.tree.pack(side='top', fill='both', expand=True)
@@ -74,7 +78,7 @@ class RecursiveJSONViewer(tk.Frame):
         style.configure('Treeview', background='#333', fieldbackground='#333', foreground='white')
         style.map('Treeview', background=[('selected', '#555')], foreground=[('selected', 'white')])
 
-        self.add_checklist(['RottenTomatoes', 'Metacritic', 'IMDB', 'CinemaCity', 'YesPlanet', 'HotCinema'])
+        self.add_checklist(['YesPlanet', 'HotCinema', 'CinemaCity', 'RottenTomatoes', 'Metacritic', 'IMDB'])
         # Define a new button style for dark mode
         style.configure('DarkButton.TButton', background='#555', foreground='white', borderwidth=0, focuscolor='#555')
 
@@ -167,11 +171,11 @@ class RecursiveJSONViewer(tk.Frame):
         for item in items:
             c+=1
             var = tk.IntVar()
-            checkbutton = ttk.Checkbutton(self.master, text=item, variable=var)
-            if c>3:
-                checkbutton.place(x=20, y=10+17*(c-4))
-            else:
-                checkbutton.place(x=150, y=10+17*(c-1))
+            img = tkinter_img('icons/{0}.png'.format(item))
+            checkbutton = ttk.Checkbutton(self.master, variable=var, image=img, compound='left')
+            checkbutton.image = img
+            checkbutton.place(x=10 + 75*((c-1)), y=15)
+            # checkbutton.place(x=10 + 75*((c-1)//2), y=3 + 60*((c-1)%2))
             self.checklist.append((item, var))
             self.checklist_buttons.append(checkbutton)
 
@@ -191,7 +195,7 @@ if __name__ == '__main__':
     json_data = read_json()
     root = tk.Tk()
     root.title('Cinema Crawler')
-    root.geometry('400x600')
+    root.geometry('480x600')
     viewer = RecursiveJSONViewer(root)
 
     viewer.load_json(json_data)

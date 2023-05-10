@@ -26,3 +26,4 @@ def convert_time(time_str):
     minutes = int(re.match(r'(\d+) min', time_str).group(1))
     hours, minutes = minutes // 60, minutes % 60
     return '{}h {}m'.format(hours, minutes)
+
