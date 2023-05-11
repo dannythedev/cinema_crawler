@@ -1,6 +1,5 @@
-from Functions import convert_time
+from Functions import convert_time, exception_method
 from Reviewers.Reviewer import Reviewer
-from Functions import exception_method
 
 
 class Metacritic(Reviewer):
