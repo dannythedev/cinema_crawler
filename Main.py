@@ -4,6 +4,9 @@ import time
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
+import urllib
+from io import BytesIO
+
 from PIL import Image, ImageTk
 from Archive import Archive, EXPORT_FILE
 from Functions import regexify, estimate_time
@@ -30,6 +33,8 @@ class LoadingScreen(tk.Toplevel):
 
     def set_progress(self, value, estimated_time):
         self.progressbar['value'] = value
+        if estimated_time[0] == '-':
+            estimated_time = 'N/A'
         self.label.config(text='Fetching Rating from Reviewers...\nEstimated Time: {0}'.format(estimated_time))
 
 class RecursiveJSONViewer(tk.Frame):
@@ -69,10 +74,16 @@ class RecursiveJSONViewer(tk.Frame):
         self.collapse_button = ttk.Button(self, text='Collapse all', command=self.collapse_all)
         self.collapse_button.pack(side='left')
 
+        # Color
         style = ttk.Style(self.master)
-        # Set style for modern look
-        style.theme_use('clam')
-        style.configure('Treeview', font=('Arial', 12))
+
+        treeview_bg = '#363636'
+        treeview_fg = '#f0f0f0'
+
+        style.configure('Treeview', font=('Arial', 15),
+                        background=treeview_bg,
+                        foreground=treeview_fg,
+                        fieldbackground=treeview_bg)
 
         # Set new colors for the treeview widget
         style.configure('Treeview', background='#333', fieldbackground='#333', foreground='white')
@@ -87,6 +98,8 @@ class RecursiveJSONViewer(tk.Frame):
     def load_json(self, data, parent=''):
         if isinstance(data, dict):
             for key, value in data.items():
+                if key == 'image' and regexify(regex=r"^(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)$", data=value):
+                    data[key] = value
                 if isinstance(value, (dict, list)):
                     node = self.tree.insert(parent, 'end', text=f'{key}:')
                     self.load_json(value, node)
@@ -178,6 +191,7 @@ class RecursiveJSONViewer(tk.Frame):
             # checkbutton.place(x=10 + 75*((c-1)//2), y=3 + 60*((c-1)%2))
             self.checklist.append((item, var))
             self.checklist_buttons.append(checkbutton)
+
 
 def read_json():
     if not os.path.exists(EXPORT_FILE):
