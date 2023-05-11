@@ -4,8 +4,6 @@ import time
 import tkinter as tk
 import tkinter.ttk as ttk
 import json
-import urllib
-from io import BytesIO
 
 from PIL import Image, ImageTk
 from Archive import Archive, EXPORT_FILE
