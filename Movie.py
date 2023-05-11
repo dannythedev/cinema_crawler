@@ -1,13 +1,13 @@
 class Movie:
     def __init__(self, title, suffix, image, trailer, genre, origin):
         self.title = title
-        self.suffix = suffix
-        self.duration = None
-        self.image = image
-        self.trailer = trailer
         self.total_rating = 0
+        self.image = image
+        self.duration = None
         self.rating = dict()
         self.genre = genre
+        self.suffix = suffix
+        self.trailer = trailer
         self.origin = origin
 
     def accumulate_rating(self):

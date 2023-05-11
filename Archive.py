@@ -3,6 +3,7 @@ import threading
 from Cinemas.YesPlanet import YesPlanet
 from Cinemas.CinemaCity import CinemaCity
 from Cinemas.HotCinema import HotCinema
+from Functions import capitalize_sentence
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
@@ -75,6 +76,7 @@ class Archive:
     def export_json(self):
         """Exports data as a JSON file."""
         [delattr(movie, 'suffix') for movie in self.movies]
+        [setattr(movie, 'title', capitalize_sentence(movie.title)) for movie in self.movies]
         dumps = json.dumps([movie.__dict__ for movie in self.movies], indent=4)
         f = open(EXPORT_FILE, 'w')
         f.write(dumps)
