@@ -1,3 +1,4 @@
+from Functions import capitalize_sentence
 from Request import Request
 
 
@@ -14,4 +15,4 @@ class Cinema(Request):
 
     def filter_categories_in_list(self, l):
         """Filters categories per self.filter_categories list."""
-        return [x for x in l if x.lower() in self.filter_categories]
+        return ', '.join([capitalize_sentence(x) for x in l if x.lower() in self.filter_categories])

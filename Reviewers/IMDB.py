@@ -1,3 +1,4 @@
+from Functions import exception_method
 from Reviewers.Reviewer import Reviewer
 
 
@@ -9,13 +10,15 @@ class IMDB(Reviewer):
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'}
 
-
+    @exception_method
     def get_duration(self, movie):
-        try:
-            if not movie.duration:
-                movie.duration = str(self.html.get_xpath("//html/body/div[2]/main//li[3]/text()")[0])
-        except:
-            pass
+        if not movie.duration:
+            movie.duration = str(self.html.get_xpath("//html/body/div[2]/main//li[3]/text()")[0])
+
+    @exception_method
+    def get_genre(self, movie):
+        if not movie.genre:
+            movie.genre = str(', '.join(self.html.get_xpath("//div[@class='ipc-chip-list__scroller']/a//text()")))
 
     def get_attributes(self, movie):
         """Searches for movie in IMDB. Then gets rating."""
@@ -25,6 +28,7 @@ class IMDB(Reviewer):
         if title.lower().replace(' ', '-').replace(':', '').replace('&', '') == movie.suffix:
             self.get(self.url + url)
             self.get_duration(movie)
+            self.get_genre(movie)
         else:
             return
         rating = self.html.get_xpath("//span[@class='sc-bde20123-1 iZlgcd']/text()")[0]

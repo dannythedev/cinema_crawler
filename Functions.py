@@ -32,3 +32,12 @@ def convert_time(time_str):
 def capitalize_sentence(sentence):
     words = sentence.split()
     return ' '.join([word.capitalize() if (word.lower() != 'of' and word.lower() != 'a') or index == 0 else word for index, word in enumerate(words)])
+
+def exception_method(func):
+    def execution(*args, **kwargs):
+        try:
+            return func(args, kwargs)
+        except:
+            pass
+
+    return execution

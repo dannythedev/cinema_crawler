@@ -1,12 +1,17 @@
+from Functions import exception_method
 from Request import Request
-
 
 class Reviewer(Request):
     def __init__(self):
         self.progress = 0
         super().__init__()
 
+    @exception_method
     def get_duration(self, movie):
+        pass
+
+    @exception_method
+    def get_genre(self, movie):
         pass
 
     def get_attributes(self, movie):
