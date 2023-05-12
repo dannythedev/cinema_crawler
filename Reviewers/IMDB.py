@@ -20,15 +20,13 @@ class IMDB(Reviewer):
         if not movie.genre:
             movie.genre = str(', '.join(self.html.get_xpath("//div[@class='ipc-chip-list__scroller']/a//text()")))
 
-    def get_attributes(self, movie):
+    def get_attributes(self, movie, url=''):
         """Searches for movie in IMDB. Then gets rating."""
         self.get(self.search_url + movie.title)
         url = self.html.get_xpath("//a[@class='ipc-metadata-list-summary-item__t']/@href")[0]
         title = self.html.get_xpath("//a[@class='ipc-metadata-list-summary-item__t']/text()")[0]
         if title.lower().replace(' ', '-').replace(':', '').replace('&', '') == movie.suffix:
-            self.get(self.url + url)
-            self.get_duration(movie)
-            self.get_genre(movie)
+            super().get_attributes(movie, url=self.url + url)
         else:
             return
         rating = self.html.get_xpath("//span[@class='sc-bde20123-1 iZlgcd']/text()")[0]

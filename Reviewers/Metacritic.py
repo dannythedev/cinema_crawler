@@ -19,10 +19,8 @@ class Metacritic(Reviewer):
         if not movie.genre:
             movie.genre = str(', '.join(self.html.get_xpath("//div[@class='genres']/span[2]/span/text()")))
 
-    def get_attributes(self, movie):
-        self.get(url=self.url + movie.suffix)
-        self.get_duration(movie)
-        self.get_genre(movie)
+    def get_attributes(self, movie, url=''):
+        super().get_attributes(movie=movie, url=self.url + movie.suffix)
         critic_score = self.html.get_xpath("//span[contains(@class, 'metascore_w larger movie')]/text()")[0]
         audience_score = self.html.get_xpath("//span[contains(@class, 'metascore_w user')]/text()")[0]
         movie.rating.update({'Metacritic Audience Score': int(critic_score),

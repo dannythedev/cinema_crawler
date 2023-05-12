@@ -17,10 +17,8 @@ class RottenTomatoes(Reviewer):
         if not movie.genre:
             movie.genre = str(self.html.get_xpath("//p[@class='info']/text()")[0].split(', ')[1])
 
-    def get_attributes(self, movie):
-        self.get(url=self.url + movie.suffix.replace('-', '_'))
-        self.get_duration(movie)
-        self.get_genre(movie)
+    def get_attributes(self, movie, url=''):
+        super().get_attributes(movie=movie, url=self.url + movie.suffix.replace('-', '_'))
         board = self.html.find("score-board") # Rating
         if board is not None:
             if board["audiencescore"] == '' and board["tomatometerscore"] == '':
