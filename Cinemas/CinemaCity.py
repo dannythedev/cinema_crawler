@@ -13,9 +13,9 @@ class CinemaCity(Cinema):
 
     def get_movies(self):
         movies = []
-        for x in range(0, 20):
+        for _ in range(0, 20):
             self.params['page'] += 1
-            response = super().get(self.url)
+            response = self.get(self.url)
             page_movies = self.html.get_xpath("//div[@class='col-lg-3 col-md-4 col-sm-4 col-6 movie-thumb']")
             if page_movies:
                 movies += page_movies

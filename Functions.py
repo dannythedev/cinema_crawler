@@ -3,6 +3,8 @@ import re
 import string
 import time
 
+import requests
+
 
 def regexify(regex, data):
     """Extracts regex string from data string."""
@@ -44,3 +46,46 @@ def exception_method(func):
         except Exception as e:
             return f"Error: {str(e)}"
     return wrapper
+
+
+import math
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    # Convert coordinates to radians
+    lat1_rad = math.radians(lat1)
+    lon1_rad = math.radians(lon1)
+    lat2_rad = math.radians(lat2)
+    lon2_rad = math.radians(lon2)
+
+    # Haversine formula
+    dlon = lon2_rad - lon1_rad
+    dlat = lat2_rad - lat1_rad
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(dlon / 2) ** 2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    distance = 6371 * c  # Radius of the Earth in kilometers
+
+    return distance
+
+
+def find_nearest_addresses(my_location, addresses, radius_km):
+    my_lat, my_lon = my_location
+
+    # Filter addresses within the radius of 20 km
+    nearest_addresses = []
+    for address in addresses:
+        address_lat, address_lon = address['latitude'], address['longitude']
+        distance = calculate_distance(my_lat, my_lon, address_lat, address_lon)
+        if distance <= radius_km:
+            nearest_addresses.append(address)
+
+    return nearest_addresses
+
+
+def get_location_from_ip():
+    response = requests.get('https://ipapi.co/json/')
+    if response.status_code == 200:
+        data = response.json()
+        latitude = data['latitude']
+        longitude = data['longitude']
+        return latitude, longitude
+    print('Failed to retrieve location information.')

@@ -11,7 +11,7 @@ class HotCinema(Cinema):
         self.url = 'https://hotcinema.co.il/'
 
     def get_movies(self):
-        response = super().get(self.url)
+        response = self.get(self.url)
         movies = json.loads(regexify(regex='app.movies = (.*])', data=response.text))
         movies_list = []
         for x in movies:
