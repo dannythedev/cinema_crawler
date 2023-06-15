@@ -86,7 +86,8 @@ class CinemaCity(Cinema):
             theatre['latitude'], theatre['longitude'] = float(theatre['latitude']), float(theatre['longitude'])
             theatre['id'] = regexify(r'(?<=/)\d+', theatre['url'])
 
-        nearest_theatres = find_nearest_addresses(theatres)
+        # nearest_theatres = find_nearest_addresses(theatres)
+        nearest_theatres = None
         return theatres if not nearest_theatres else nearest_theatres
 
     def get_theatre_screenings(self, theatres, movies=None):

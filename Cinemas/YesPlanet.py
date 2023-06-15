@@ -40,7 +40,8 @@ class YesPlanet(Cinema):
         for theatre in theatres:
             theatre['url'] = '{api_url}/quickbook/10100/film-events/in-cinema/{id}/at-date/{date}?attr=&lang=he_IL'\
                 .format(date=today_date, id=theatre['id'], api_url=self.api_url)
-        nearest_theatres = find_nearest_addresses(theatres)
+        # nearest_theatres = find_nearest_addresses(theatres)
+        nearest_theatres = None
         return theatres if not nearest_theatres else nearest_theatres
 
     def get_theatre_screenings(self, theatres, movies=None):
