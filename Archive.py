@@ -21,7 +21,9 @@ class Archive:
                 cinemas.append(movies_dict[key])
         self.movies = []
         for cinema in cinemas:
-            self.movies += cinema.get_movies()
+            exported_movies = cinema.get_movies()
+            self.movies += exported_movies
+            cinema.set_movie_screenings(exported_movies)
 
         unique_list = dict()
         # Iterate over each item in the original list
@@ -31,8 +33,13 @@ class Archive:
                 # If it's not, add it to the unique list
                 unique_list.update({item.title : item})
             else:
-                if item.origin not in unique_list[item.title].origin:
-                    unique_list[item.title].origin += ', '+item.origin
+                if str(item.origin) not in str(unique_list[item.title].origin):
+                    unique_list[item.title].origin.update(item.origin)
+                    for screening in item.screenings:
+                        unique_list[item.title].screenings.update({screening:item.screenings[screening]})
+                    # Sort list by time.
+                    # unique_list[item.title].screenings[screening] = \
+                    #     sorted(unique_list[item.title].screenings[screening], key=lambda x: int(x.split(':')[0]))
         self.movies = list(unique_list.values())
 
         self.reviewers = []

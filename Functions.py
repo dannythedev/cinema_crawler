@@ -2,8 +2,10 @@ import functools
 import re
 import string
 import time
+import datetime
 
 import requests
+
 
 
 def regexify(regex, data):
@@ -67,19 +69,28 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return distance
 
 
-def find_nearest_addresses(my_location, addresses, radius_km):
-    my_lat, my_lon = my_location
+def find_nearest_addresses(addresses):
+    if MY_LOCATION is None:
+        return None
+    my_lat, my_lon = MY_LOCATION
 
     # Filter addresses within the radius of 20 km
     nearest_addresses = []
     for address in addresses:
         address_lat, address_lon = address['latitude'], address['longitude']
         distance = calculate_distance(my_lat, my_lon, address_lat, address_lon)
-        if distance <= radius_km:
+        if distance <= RADIUS_KM:
             nearest_addresses.append(address)
 
     return nearest_addresses
 
+def is_address_in_range(address):
+    if MY_LOCATION is None:
+        return None
+    my_lat, my_lon = MY_LOCATION
+    address_lat, address_lon = address['latitude'], address['longitude']
+    distance = calculate_distance(my_lat, my_lon, address_lat, address_lon)
+    return distance <= RADIUS_KM
 
 def get_location_from_ip():
     response = requests.get('https://ipapi.co/json/')
@@ -89,3 +100,9 @@ def get_location_from_ip():
         longitude = data['longitude']
         return latitude, longitude
     print('Failed to retrieve location information.')
+
+MY_LOCATION = get_location_from_ip()
+RADIUS_KM = 20
+
+def format_date(date, from_format, to_format):
+    return datetime.datetime.strptime(date, from_format).strftime(to_format)

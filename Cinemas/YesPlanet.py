@@ -1,7 +1,7 @@
 import datetime
 import json
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify, get_location_from_ip, find_nearest_addresses
+from Functions import is_english, regexify, get_location_from_ip, find_nearest_addresses, MY_LOCATION, format_date
 from Movie import Movie
 
 
@@ -9,9 +9,9 @@ class YesPlanet(Cinema):
     def __init__(self):
         super().__init__()
         self.url = 'https://www.planetcinema.co.il/il/data-api-service/v1/feed/10100/byName/now-playing?lang=en_GB'
+        self.name = 'Yes Planet'
 
     def get_movies(self):
-        self.get_theater_ids()
         response = self.get(self.url)
         movies = json.loads(response.text)['body']['posters']
         return [Movie(title=x['featureTitle'].lower(),
@@ -19,27 +19,46 @@ class YesPlanet(Cinema):
                       image=x['mediaList'][-2]['url'],
                       trailer=x['mediaList'][-1]['url'],
                       genre=self.filter_categories_in_list(x['attributes']),
-                      origin='Yes Planet') for x in movies if is_english(x['featureTitle'])]
+                      origin={'Yes Planet': x['code']}) for x in movies if is_english(x['featureTitle'])]
 
-    def get_theater_ids(self):
+    def get_nearest_theatres(self):
+        """Gets a list of cinema branches by id, latitude, longitude and display name.
+        Then filters out branches that are outside a 20 km radius.
+        Returns list of dictionaries as such:
+        [{id:'', latitude:'', longitude:'', displayName:'', url:''}]"""
+
         formatted_date = (datetime.datetime.now() + datetime.timedelta(days=365)).strftime('%Y-%m-%d')
         today_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        url = 'https://www.planetcinema.co.il/il/data-api-service/v1/quickbook/10100/cinemas/with-event/until/{date}?attr=&lang=he_IL'.format(date=formatted_date)
+        url = 'https://www.planetcinema.co.il/il/data-api-service/v1/quickbook/10100/cinemas/with-event/until/{date}?attr=&lang=he_IL'.format(
+            date=formatted_date)
         response = self.get(url)
         response = json.loads(response.text)['body']['cinemas']
         theatres = [{key: d[key] for key in ['id', 'latitude', 'longitude', 'displayName']} for d in response]
-        for theatre in theatres:
-            theatre['url'] = 'https://www.planetcinema.co.il/il/data-api-service/v1/quickbook/10100/film-events/in-cinema/{id}/at-date/{date}?attr=&lang=he_IL'.format(date=today_date, id=theatre['id'])
-        theatres = find_nearest_addresses(get_location_from_ip(), theatres, radius_km=20)
 
+        for theatre in theatres:
+            theatre[
+                'url'] = 'https://www.planetcinema.co.il/il/data-api-service/v1/quickbook/10100/film-events/in-cinema/{id}/at-date/{date}?attr=&lang=he_IL'.format(
+                date=today_date, id=theatre['id'])
+        nearest_theatres = find_nearest_addresses(theatres)
+        return nearest_theatres if nearest_theatres is not None else theatres
+
+    def get_theatre_screenings(self, theatres):
+        """Gets all movie screenings from theatres list.
+        Returns dictionary which values are a list of dictionaries as such:
+        {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""
+
+        timetables = dict()
         for theatre in theatres:
             response = self.get(theatre['url'])
             response = json.loads(response.text)['body']
             events = response['events']
             timetable = {event['filmId']: [] for event in events}
+
             for event in events:
-                event_date = datetime.datetime.strptime(event['eventDateTime'], '%Y-%m-%dT%H:%M:%S').strftime('%H:%M')
+                event_date = format_date(date=event['eventDateTime'], from_format='%Y-%m-%dT%H:%M:%S', to_format='%H:%M')
                 timetable[event['filmId']].append(event_date)
-            pass
-        # Bookings in selected Theatres
+            timetables[theatre['displayName']] = timetable
+        return timetables
+
+
 

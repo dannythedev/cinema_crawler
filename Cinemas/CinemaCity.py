@@ -1,6 +1,6 @@
 import bs4
 from Cinemas.Cinema import Cinema
-from Functions import is_english
+from Functions import is_english, regexify
 from Movie import Movie
 from lxml import etree
 
@@ -8,6 +8,7 @@ class CinemaCity(Cinema):
     def __init__(self):
         super().__init__()
         self.url = 'https://www.cinema-city.co.il/home/MoviesGrid'
+        self.name = 'Cinema City'
         self.params = {'cat': 'now', 'page': 0, 'TheaterId': 0, 'catId': 0}
 
 
@@ -26,6 +27,7 @@ class CinemaCity(Cinema):
         for response_text in movies:
             dom = etree.HTML(str(bs4.BeautifulSoup(str(response_text), "html.parser")))
             title = dom.xpath("//div[@class='flip-1']/p[@class='sub-title']/text()") + dom.xpath("//div[@class='flip-1']/p[@class='title']/text()")
+            movie_id = regexify(r'(?<=/)\d+', str(dom.xpath("/html/body/div/@data-linkmobile")[0]))
             if title:
                 title = str(title[0])
                 if is_english(title):
@@ -34,6 +36,6 @@ class CinemaCity(Cinema):
                                              trailer='',
                                              genre=[],
                                              image=dom.xpath("//img[@class='img-responsive flip-thumb']/@src"),
-                                             origin='Cinema City')
+                                             origin={'Cinema City': movie_id})
                                              )
         return movies_list
