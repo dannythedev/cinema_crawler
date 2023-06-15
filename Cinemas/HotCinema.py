@@ -40,7 +40,7 @@ class HotCinema(Cinema):
         display_names = self.html.get_xpath("//div[@class='modal-body']/ul/li/a/text()")
         theatres = []
         for x in range(len(display_names)):
-            theatres.append({'displayName': display_names[x], 'url': url+urls[x]})
+            theatres.append({'displayName': display_names[x].strip("\n ").strip(), 'url': url+urls[x]})
         # Nearest theatres will be done in next function.
         for theatre in theatres:
             response = self.get(theatre['url'])
@@ -50,9 +50,9 @@ class HotCinema(Cinema):
             theatre['id'] = regexify(r'(?<=/)\d+', theatre['url'])
 
         nearest_theatres = find_nearest_addresses(theatres)
-        return nearest_theatres if nearest_theatres is not None else theatres
+        return theatres if not nearest_theatres else nearest_theatres
 
-    def get_theatre_screenings(self, theatres):
+    def get_theatre_screenings(self, theatres, movies=None):
         """Gets all movie screenings from theatres list.
         Returns dictionary which values are a list of dictionaries as such:
         {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""

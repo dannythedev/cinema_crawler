@@ -71,7 +71,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 
 def find_nearest_addresses(addresses):
     if MY_LOCATION is None:
-        return None
+        return []
     my_lat, my_lon = MY_LOCATION
 
     # Filter addresses within the radius of 20 km

@@ -1,6 +1,9 @@
+import datetime
+import json
+
 import bs4
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify
+from Functions import is_english, regexify, find_nearest_addresses
 from Movie import Movie
 from lxml import etree
 
@@ -10,6 +13,7 @@ class CinemaCity(Cinema):
         self.url = 'https://www.cinema-city.co.il/home/MoviesGrid'
         self.name = 'Cinema City'
         self.params = {'cat': 'now', 'page': 0, 'TheaterId': 0, 'catId': 0}
+        self.theatres = {}
 
 
     def get_movies(self):
@@ -32,10 +36,72 @@ class CinemaCity(Cinema):
                 title = str(title[0])
                 if is_english(title):
                     movies_list.append(Movie(title=title.lower(),
-                                             suffix=title.replace(' ','-').lower(),
+                                             suffix=title.replace(' ', '-').lower(),
                                              trailer='',
                                              genre=[],
                                              image=dom.xpath("//img[@class='img-responsive flip-thumb']/@src"),
                                              origin={'Cinema City': movie_id})
                                              )
         return movies_list
+
+
+    def get_nearest_theatres(self):
+        """Gets a list of cinema branches by id, latitude, longitude and display name.
+        Then filters out branches that are outside a 20 km radius.
+        Returns list of dictionaries as such:
+        [{id:'', latitude:'', longitude:'', displayName:'', url:''}]"""
+
+        url = 'https://www.cinema-city.co.il/'
+        response = self.get(url)
+
+        # Generates id:displayName dictionary.
+        theatre_id_dictionary = regexify(r'self\.ticketsVM\.theatersAll\((.*)\)', response.text)
+        theatre_id_dictionary = json.loads(theatre_id_dictionary)
+
+        for theatre in theatre_id_dictionary:
+            if theatre['TixTheatreId'] not in self.theatres:
+                self.theatres.update({theatre['TixTheatreId']: theatre['Name']})
+
+        urls = self.html.get_xpath("//div[@class='theatre-a']/a/@href")
+        urls = [str(url)[1:] for url in urls]
+        display_names = self.html.get_xpath("//div[@class='theatre-a']/a[@href]//div[@class='theatre-name']/text()")
+        theatres = []
+        for x in range(len(display_names)):
+            theatres.append({'displayName': display_names[x].strip("\n ").strip(), 'url': url+urls[x]})
+
+        # Nearest theatres will be done in next function.
+        for theatre in theatres:
+            response = self.get(theatre['url'])
+            maps_url = str(self.html.get_xpath("//div[@class='theater-loc']/iframe/@src")[0])
+            theatre['latitude'], theatre['longitude'] = regexify(r"!2d(\d+\.\d+)!3d(\d+\.\d+)", maps_url)
+            theatre['latitude'], theatre['longitude'] = float(theatre['latitude']), float(theatre['longitude'])
+            theatre['id'] = regexify(r'(?<=/)\d+', theatre['url'])
+
+        nearest_theatres = find_nearest_addresses(theatres)
+        return theatres if not nearest_theatres else nearest_theatres
+
+    def get_theatre_screenings(self, theatres, movies=None):
+        """Gets all movie screenings from theatres list.
+        Returns dictionary which values are a list of dictionaries as such:
+        {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""
+        today_date = datetime.datetime.now().strftime('%d/%m/%Y')
+        timetables = dict()
+
+        for movie in movies:
+            movie_id = movie.origin[self.name]
+            response = self.get('https://www.cinema-city.co.il/tickets/Events?VenueTypeId=1&MovieId={movie_id}&Date=0'.format(movie_id=movie_id))
+            events = json.loads(response.text)
+            events = [[date for date in event['Dates'] if today_date in date['Date']] for event in events]
+            movie_dates = []
+            for event in events[0]:
+                if event['TheaterId'] not in timetables.keys():
+                    timetables[event['TheaterId']] = {}
+                movie_dates.append(event['Hour'])
+                timetables[event['TheaterId']].update({movie_id : movie_dates})
+
+        timetables = {self.theatres[timetable]: timetables[timetable] for timetable in timetables}
+        return timetables
+
+
+
+

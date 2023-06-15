@@ -14,13 +14,13 @@ class Cinema(Request):
         pass
     def set_movie_screenings(self, movies):
         theatres = self.get_nearest_theatres()
-        timetables = self.get_theatre_screenings(theatres)
+        timetables = self.get_theatre_screenings(theatres, movies)
         self.place_screenings_under_movie_by_id(timetables, movies)
 
     def get_nearest_theatres(self):
         pass
 
-    def get_theatre_screenings(self, theatres):
+    def get_theatre_screenings(self, theatres, movies=None):
         pass
 
     def place_screenings_under_movie_by_id(self, timetables, movies):

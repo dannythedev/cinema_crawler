@@ -40,9 +40,9 @@ class YesPlanet(Cinema):
                 'url'] = 'https://www.planetcinema.co.il/il/data-api-service/v1/quickbook/10100/film-events/in-cinema/{id}/at-date/{date}?attr=&lang=he_IL'.format(
                 date=today_date, id=theatre['id'])
         nearest_theatres = find_nearest_addresses(theatres)
-        return nearest_theatres if nearest_theatres is not None else theatres
+        return theatres if not nearest_theatres else nearest_theatres
 
-    def get_theatre_screenings(self, theatres):
+    def get_theatre_screenings(self, theatres, movies=None):
         """Gets all movie screenings from theatres list.
         Returns dictionary which values are a list of dictionaries as such:
         {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""
