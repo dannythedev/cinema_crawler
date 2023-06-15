@@ -10,7 +10,8 @@ from lxml import etree
 class CinemaCity(Cinema):
     def __init__(self):
         super().__init__()
-        self.url = 'https://www.cinema-city.co.il/home/MoviesGrid'
+        self.home_url = 'https://www.cinema-city.co.il/'
+        self.url = '{home_url}home/MoviesGrid'.format(home_url=self.home_url)
         self.name = 'Cinema City'
         self.params = {'cat': 'now', 'page': 0, 'TheaterId': 0, 'catId': 0}
         self.theatres = {}
@@ -50,9 +51,7 @@ class CinemaCity(Cinema):
         Then filters out branches that are outside a 20 km radius.
         Returns list of dictionaries as such:
         [{id:'', latitude:'', longitude:'', displayName:'', url:''}]"""
-
-        url = 'https://www.cinema-city.co.il/'
-        response = self.get(url)
+        response = self.get(self.home_url)
 
         # Generates id:displayName dictionary.
         theatre_id_dictionary = regexify(r'self\.ticketsVM\.theatersAll\((.*)\)', response.text)
@@ -67,7 +66,7 @@ class CinemaCity(Cinema):
         display_names = self.html.get_xpath("//div[@class='theatre-a']/a[@href]//div[@class='theatre-name']/text()")
         theatres = []
         for x in range(len(display_names)):
-            theatres.append({'displayName': display_names[x].strip("\n ").strip(), 'url': url+urls[x]})
+            theatres.append({'displayName': display_names[x].strip("\n ").strip(), 'url': self.home_url+urls[x]})
 
         # Nearest theatres will be done in next function.
         for theatre in theatres:
@@ -89,7 +88,7 @@ class CinemaCity(Cinema):
 
         for movie in movies:
             movie_id = movie.origin[self.name]
-            response = self.get('https://www.cinema-city.co.il/tickets/Events?VenueTypeId=1&MovieId={movie_id}&Date=0'.format(movie_id=movie_id))
+            response = self.get('{home_url}tickets/Events?VenueTypeId=1&MovieId={movie_id}&Date=0'.format(movie_id=movie_id, home_url=self.home_url))
             events = json.loads(response.text)
             events = [[date for date in event['Dates'] if today_date in date['Date']] for event in events]
             movie_dates = []

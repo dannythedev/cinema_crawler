@@ -8,7 +8,9 @@ from Movie import Movie
 class YesPlanet(Cinema):
     def __init__(self):
         super().__init__()
-        self.url = 'https://www.planetcinema.co.il/il/data-api-service/v1/feed/10100/byName/now-playing?lang=en_GB'
+        self.home_url = 'https://www.planetcinema.co.il/il'
+        self.api_url = '{home_url}/data-api-service/v1'.format(home_url=self.home_url)
+        self.url = '{api_url}/feed/10100/byName/now-playing?lang=en_GB'.format(api_url=self.api_url)
         self.name = 'Yes Planet'
 
     def get_movies(self):
@@ -29,16 +31,15 @@ class YesPlanet(Cinema):
 
         formatted_date = (datetime.datetime.now() + datetime.timedelta(days=365)).strftime('%Y-%m-%d')
         today_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        url = 'https://www.planetcinema.co.il/il/data-api-service/v1/quickbook/10100/cinemas/with-event/until/{date}?attr=&lang=he_IL'.format(
-            date=formatted_date)
+        url = '{api_url}/quickbook/10100/cinemas/with-event/until/{date}?attr=&lang=he_IL'.format(
+            date=formatted_date, api_url=self.api_url)
         response = self.get(url)
         response = json.loads(response.text)['body']['cinemas']
         theatres = [{key: d[key] for key in ['id', 'latitude', 'longitude', 'displayName']} for d in response]
 
         for theatre in theatres:
-            theatre[
-                'url'] = 'https://www.planetcinema.co.il/il/data-api-service/v1/quickbook/10100/film-events/in-cinema/{id}/at-date/{date}?attr=&lang=he_IL'.format(
-                date=today_date, id=theatre['id'])
+            theatre['url'] = '{api_url}/quickbook/10100/film-events/in-cinema/{id}/at-date/{date}?attr=&lang=he_IL'\
+                .format(date=today_date, id=theatre['id'], api_url=self.api_url)
         nearest_theatres = find_nearest_addresses(theatres)
         return theatres if not nearest_theatres else nearest_theatres
 

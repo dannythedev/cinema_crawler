@@ -10,7 +10,7 @@ from Reviewers.RottenTomatoes import RottenTomatoes
 EXPORT_FILE = 'movies.json'
 
 class Archive:
-    def __init__(self, checklist=[]):
+    def __init__(self, checklist=[], is_screenings=False):
         self.current, self.total = 0, 0
         cinemas = []
         movies_dict = {'YesPlanet': YesPlanet(),
@@ -23,7 +23,8 @@ class Archive:
         for cinema in cinemas:
             exported_movies = cinema.get_movies()
             self.movies += exported_movies
-            cinema.set_movie_screenings(exported_movies)
+            if is_screenings:
+                cinema.set_movie_screenings(exported_movies)
 
         unique_list = dict()
         # Iterate over each item in the original list
@@ -37,9 +38,10 @@ class Archive:
                     unique_list[item.title].origin.update(item.origin)
                     for screening in item.screenings:
                         unique_list[item.title].screenings.update({screening:item.screenings[screening]})
-                    # Sort list by time.
-                    # unique_list[item.title].screenings[screening] = \
-                    #     sorted(unique_list[item.title].screenings[screening], key=lambda x: int(x.split(':')[0]))
+                        # Sort list by time and remove duplicates.
+                        unique_list[item.title].screenings[screening] = list(set(unique_list[item.title].screenings[screening]))
+                        unique_list[item.title].screenings[screening] = \
+                            sorted(unique_list[item.title].screenings[screening], key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
         self.movies = list(unique_list.values())
 
         self.reviewers = []

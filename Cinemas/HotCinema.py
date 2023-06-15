@@ -9,11 +9,12 @@ from Movie import Movie
 class HotCinema(Cinema):
     def __init__(self):
         super().__init__()
-        self.url = 'https://hotcinema.co.il/'
+        self.home_url = 'https://hotcinema.co.il/'
+        self.api_url = '{home_url}tickets/TheaterEvents2'.format(home_url=self.home_url)
         self.name = 'Hot Cinema'
 
     def get_movies(self):
-        response = self.get(self.url)
+        response = self.get(self.home_url)
         movies = json.loads(regexify(regex='app.movies = (.*])', data=response.text))
         movies_list = []
         for x in movies:
@@ -33,14 +34,13 @@ class HotCinema(Cinema):
         Returns list of dictionaries as such:
         [{id:'', latitude:'', longitude:'', displayName:'', url:''}]"""
 
-        url = 'https://hotcinema.co.il/'
-        response = self.get(url)
+        response = self.get(self.home_url)
         urls = self.html.get_xpath("//div[@class='modal-body']/ul/li/a/@href")
         urls = [str(url)[1:] for url in urls]
         display_names = self.html.get_xpath("//div[@class='modal-body']/ul/li/a/text()")
         theatres = []
         for x in range(len(display_names)):
-            theatres.append({'displayName': display_names[x].strip("\n ").strip(), 'url': url+urls[x]})
+            theatres.append({'displayName': display_names[x].strip("\n ").strip(), 'url': self.home_url+urls[x]})
         # Nearest theatres will be done in next function.
         for theatre in theatres:
             response = self.get(theatre['url'])
@@ -60,9 +60,8 @@ class HotCinema(Cinema):
         timetables = dict()
         today_date = datetime.datetime.now().strftime('%d/%m/%Y')
         for theatre in theatres:
-            url = 'https://hotcinema.co.il/tickets/TheaterEvents2?movieid=undefined&date={date}&theatreid={id}&site=undefined&time=&type=undefined&lang=&kinorai=undefined&genreId=0&screentype=&subdub=&isnew=false'.format(
-                date=today_date, id=theatre['id']
-            )
+            url = '{api_url}?movieid=undefined&date={date}&theatreid={id}&site=undefined&time=&type=undefined&lang=&kinorai=undefined&genreId=0&screentype=&subdub=&isnew=false'.format(
+                date=today_date, id=theatre['id'], api_url=self.api_url)
             response = self.get(url)
             events = json.loads(response.text)['TheaterEvents']
 
