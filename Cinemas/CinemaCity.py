@@ -12,21 +12,31 @@ class CinemaCity(Cinema):
         super().__init__()
         self.home_url = 'https://www.cinema-city.co.il/'
         self.url = '{home_url}home/MoviesGrid'.format(home_url=self.home_url)
+        self.api_url = '{home_url}tickets/Events'.format(home_url=self.home_url)
         self.name = 'Cinema City'
-        self.params = {'cat': 'now', 'page': 0, 'TheaterId': 0, 'catId': 0}
+        self.params = {'cat': 'now', 'page': 1, 'TheaterId': 0, 'catId': 0}
         self.theatres = {}
 
 
+    def get_amount_of_movies(self):
+        response = self.get('{api_url}?VenueTypeId=1&Date=0'.format(api_url=self.api_url))
+        response = json.loads(response.text)
+        return len(response)
+
     def get_movies(self):
-        movies = []
-        for _ in range(0, 20):
+        response = self.get(self.url)
+        movies = self.html.get_xpath("//div[@class='col-lg-3 col-md-4 col-sm-4 col-6 movie-thumb']")
+        limit = self.get_amount_of_movies()//len(movies) + 1
+
+        for _ in range(0, limit):
             self.params['page'] += 1
             response = self.get(self.url)
             page_movies = self.html.get_xpath("//div[@class='col-lg-3 col-md-4 col-sm-4 col-6 movie-thumb']")
             if page_movies:
-                movies += page_movies
+                movies.extend(page_movies)
             else:
                 break
+
         movies = [etree.tostring(x, pretty_print=True) for x in movies]
         movies_list = []
         for response_text in movies:
@@ -88,7 +98,8 @@ class CinemaCity(Cinema):
 
         for movie in movies:
             movie_id = movie.origin[self.name]
-            response = self.get('{home_url}tickets/Events?VenueTypeId=1&MovieId={movie_id}&Date=0'.format(movie_id=movie_id, home_url=self.home_url))
+            response = self.get('{api_url}?VenueTypeId=1&MovieId={movie_id}&Date=0'.format(movie_id=movie_id,
+                                                                                           api_url=self.api_url))
             events = json.loads(response.text)
             events = [[date for date in event['Dates'] if today_date in date['Date']] for event in events]
             movie_dates = []
