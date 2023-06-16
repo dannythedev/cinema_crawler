@@ -7,7 +7,9 @@ from Functions import capitalize_sentence
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
+
 EXPORT_FILE = 'movies.json'
+
 
 class Archive:
     def __init__(self, checklist=[], is_screenings=False):
@@ -32,16 +34,18 @@ class Archive:
             # Check if the item is already in the unique list
             if item.title not in list(unique_list.keys()):
                 # If it's not, add it to the unique list
-                unique_list.update({item.title : item})
+                unique_list.update({item.title: item})
             else:
                 if str(item.origin) not in str(unique_list[item.title].origin):
                     unique_list[item.title].origin.update(item.origin)
                     for screening in item.screenings:
-                        unique_list[item.title].screenings.update({screening:item.screenings[screening]})
+                        unique_list[item.title].screenings.update({screening: item.screenings[screening]})
                         # Sort list by time and remove duplicates.
-                        unique_list[item.title].screenings[screening] = list(set(unique_list[item.title].screenings[screening]))
+                        unique_list[item.title].screenings[screening] = list(
+                            set(unique_list[item.title].screenings[screening]))
                         unique_list[item.title].screenings[screening] = \
-                            sorted(unique_list[item.title].screenings[screening], key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
+                            sorted(unique_list[item.title].screenings[screening],
+                                   key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
         self.movies = list(unique_list.values())
 
         self.reviewers = []

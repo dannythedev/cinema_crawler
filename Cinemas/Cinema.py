@@ -8,10 +8,12 @@ class Cinema(Request):
 
     def __init__(self):
         super().__init__()
+        self.name = ''
 
     def get_movies(self):
         """Returns a list of dictionaries with movie attributes."""
         pass
+
     def set_movie_screenings(self, movies):
         theatres = self.get_nearest_theatres()
         timetables = self.get_theatre_screenings(theatres, movies)

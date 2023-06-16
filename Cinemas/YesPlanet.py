@@ -1,7 +1,7 @@
 import datetime
 import json
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify, get_location_from_ip, find_nearest_addresses, MY_LOCATION, format_date
+from Functions import is_english, regexify, format_date
 from Movie import Movie
 
 
