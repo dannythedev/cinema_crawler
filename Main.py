@@ -49,6 +49,7 @@ class RecursiveJSONViewer(tk.Frame):
         self.load_button.destroy()
         self.collapse_button.destroy()
         self.expand_button.destroy()
+        self.screening_checkbutton[0].destroy()
         self.loading_screen.destroy()
         [button.destroy() for button in self.checklist_buttons]
         self.loading_screen = None
@@ -146,7 +147,8 @@ class RecursiveJSONViewer(tk.Frame):
             self.load_button["state"] = tk.DISABLED
             print("Starting.")
             self.start_time = time.time()
-            self.archive = Archive(checklist=self.get_checked_items())
+            self.archive = Archive(checklist=self.get_checked_items(),
+                                   is_screenings=self.screening_checkbutton[1].get() == 1)
             self.archive.initialize()
             self.destroy_widgets()
             self.create_widgets()
@@ -175,9 +177,17 @@ class RecursiveJSONViewer(tk.Frame):
                 checked_items.append(item[0])
         return checked_items
 
+
+    def add_screenings_button(self):
+        var = tk.IntVar()
+        self.screening_checkbutton = (ttk.Checkbutton(self.master, variable=var, text='Scrap screenings', compound='bottom'), var)
+        self.screening_checkbutton[0].place(x=360, y=575)
+
+
     def add_checklist(self, items):
         self.checklist = []
         self.checklist_buttons = []
+        self.add_screenings_button()
         c=0
         for item in items:
             c+=1
