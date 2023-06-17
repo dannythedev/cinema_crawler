@@ -3,7 +3,7 @@ import json
 
 import bs4
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify, find_nearest_addresses
+from Functions import is_english, regexify, find_nearest_addresses, IMAGE_NOT_FOUND
 from Movie import Movie
 from lxml import etree
 
@@ -50,7 +50,7 @@ class CinemaCity(Cinema):
                                              suffix=title.replace(' ', '-').lower(),
                                              trailer='',
                                              genre=[],
-                                             image=dom.xpath("//img[@class='img-responsive flip-thumb']/@src"),
+                                             image=IMAGE_NOT_FOUND,
                                              origin={'Cinema City': movie_id})
                                              )
         return movies_list

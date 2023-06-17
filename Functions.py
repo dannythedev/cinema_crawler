@@ -6,7 +6,7 @@ import datetime
 
 import requests
 
-
+IMAGE_NOT_FOUND = 'https://www.prokerala.com/movies/assets/img/no-poster-available.webp'
 
 def regexify(regex, data):
     """Extracts regex string from data string."""
