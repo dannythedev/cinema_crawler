@@ -14,18 +14,23 @@ EXPORT_FILE = 'movies.json'
 class Archive:
     def __init__(self, checklist=[], is_screenings=False):
         self.current, self.total = 0, 0
-        cinemas = []
+        self.cinemas = []
         movies_dict = {'YesPlanet': YesPlanet(),
                        'CinemaCity': CinemaCity(),
                        'HotCinema': HotCinema()}
         for key in movies_dict.keys():
             if key in checklist:
-                cinemas.append(movies_dict[key])
+                self.cinemas.append(movies_dict[key])
         self.movies = []
-        for cinema in cinemas:
+        self.checklist = checklist
+        self.is_screenings = is_screenings
+
+
+    def initialize_cinemas(self):
+        for cinema in self.cinemas:
             exported_movies = cinema.get_movies()
             self.movies += exported_movies
-            if is_screenings:
+            if self.is_screenings:
                 cinema.set_movie_screenings(exported_movies)
 
         unique_list = dict()
@@ -53,11 +58,11 @@ class Archive:
                           'RottenTomatoes': RottenTomatoes(),
                           'IMDB': IMDB()}
         for key in reviewers_dict.keys():
-            if key in checklist:
+            if key in self.checklist:
                 self.reviewers.append(reviewers_dict[key])
         self.progress = 0
 
-    def initialize(self):
+    def initialize_reviewers(self):
         """Initializes the module."""
         self.get_movies_data()
         self.sort_by_rating()
@@ -75,11 +80,16 @@ class Archive:
         # for reviewer in self.reviewers:
         #     reviewer.initialize(self.movies)
 
-    def get_progress(self):
+    def get_reviewers_progress(self):
         """Gets progress of current pages scanned against total pages."""
-        self.current = sum([reviewer.progress for reviewer in self.reviewers])
-        self.total = len(self.movies) * (len(self.reviewers))
-        return int(self.current / self.total * 100) if self.total != 0 else 100
+        current = sum([reviewer.progress for reviewer in self.reviewers])
+        total = len(self.movies) * (len(self.reviewers))
+        return {'progress': int(current / total * 100) if total != 0 else 100, 'current':current, 'total':total}
+
+    def get_movie_screenings_progress(self):
+        current = sum([cinema.progress for cinema in self.cinemas])
+        total = sum([cinema.total_progress for cinema in self.cinemas])
+        return {'progress': int(current / total * 100) if total != 0 else 0, 'current':current, 'total':total}
 
     def sort_by_rating(self):
         """Calculates total rating for each movie in Archive, then sorts them by this value."""

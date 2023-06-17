@@ -12,6 +12,8 @@ class HotCinema(Cinema):
         self.home_url = 'https://hotcinema.co.il/'
         self.api_url = '{home_url}tickets/TheaterEvents2'.format(home_url=self.home_url)
         self.name = 'Hot Cinema'
+        self.total_progress = 0
+        self.progress = 0
 
     def get_movies(self):
         response = self.get(self.home_url)
@@ -60,6 +62,7 @@ class HotCinema(Cinema):
 
         timetables = dict()
         today_date = datetime.datetime.now().strftime('%d/%m/%Y')
+        self.total_progress = len(theatres)
         for theatre in theatres:
             url = '{api_url}?movieid=undefined&date={date}&theatreid={id}&site=undefined&time=&type=undefined&lang=&kinorai=undefined&genreId=0&screentype=&subdub=&isnew=false'.format(
                 date=today_date, id=theatre['id'], api_url=self.api_url)
@@ -71,4 +74,5 @@ class HotCinema(Cinema):
             for event in events:
                 timetable[event['MovieId']].extend([event_date['Hour'] for event_date in event['Dates']])
             timetables[theatre['displayName']] = timetable
+            self.progress += 1
         return timetables

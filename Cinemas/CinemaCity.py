@@ -16,6 +16,8 @@ class CinemaCity(Cinema):
         self.name = 'Cinema City'
         self.params = {'cat': 'now', 'page': 1, 'TheaterId': 0, 'catId': 0}
         self.theatres = {}
+        self.progress = 0
+        self.total_progress = 0
 
 
     def get_amount_of_movies(self):
@@ -96,7 +98,7 @@ class CinemaCity(Cinema):
         {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""
         today_date = datetime.datetime.now().strftime('%d/%m/%Y')
         timetables = dict()
-
+        self.total_progress = len(movies)
         for movie in movies:
             movie_id = movie.origin[self.name]
             response = self.get('{api_url}?VenueTypeId=1&MovieId={movie_id}&Date=0'.format(movie_id=movie_id,
@@ -109,6 +111,7 @@ class CinemaCity(Cinema):
                     timetables[event['TheaterId']] = {}
                 movie_dates.append(event['Hour'])
                 timetables[event['TheaterId']].update({movie_id : movie_dates})
+            self.progress += 1
 
         timetables = {self.theatres[timetable]: timetables[timetable] for timetable in timetables}
         return timetables

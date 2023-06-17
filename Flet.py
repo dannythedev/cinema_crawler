@@ -7,13 +7,14 @@ from time import sleep
 import flet as ft
 
 from Archive import EXPORT_FILE, Archive
-from Functions import estimate_time
+from Functions import estimate_time, LOADING_REFERSH_TIME
 
 
 class GUI():
     def __init__(self):
         self.tickets = []
-        self.loading_bar = []
+        self.loading_bar_reviewers = []
+        self.loading_bar_cinemas = []
         self.retrieve_button = None
         self.archive = None
 
@@ -25,29 +26,58 @@ class GUI():
             page.window_width = 480
             page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
-            def loading_bar():
-                self.loading_bar.append(ft.ProgressBar(width=400))
-                self.loading_bar.append(ft.Text("Retrieving movies", style="headlineSmall", color="amber"))
-                self.loading_bar.append(ft.Column([ft.Text("Doing something..."), self.loading_bar[0]]))
-                page.add(self.loading_bar[1], self.loading_bar[2],
+            def loading_bar_initial():
+                self.start_time = time.time()
+                self.loading_bar_cinemas.append(ft.ProgressBar(width=400))
+                self.loading_bar_cinemas.append(ft.Text("Retrieving movies", style="headlineSmall", color="blue"))
+                self.loading_bar_cinemas.append(ft.Column([ft.Text("This may take a short while."), self.loading_bar_cinemas[0]]))
+                page.add(self.loading_bar_cinemas[1], self.loading_bar_cinemas[2],
                          )
 
-                while (self.archive.get_progress() < 100):
-                    self.loading_bar[0].value = self.archive.get_progress() * 0.01
-                    sleep(1)
-                    estimate_timed = estimate_time(
-                        start_time=self.start_time, current_item=self.archive.current + 1,
-                        total_items=self.archive.total)
+                # progress = {'progress': 0}
+                # while progress['progress'] < 100:
+                #     progress = self.archive.get_movie_screenings_progress()
+                #     self.loading_bar_cinemas[0].value = progress['progress'] * 0.01
+                #     sleep(LOADING_REFERSH_TIME)
+                #     estimate_timed = estimate_time(
+                #         start_time=self.start_time, current_item=progress['current'] + 1,
+                #         total_items=progress['total'])
+                #
+                #     page.remove(self.loading_bar_cinemas[2])
+                #     self.loading_bar_cinemas[2] = ft.Column([ft.Text(estimate_timed), self.loading_bar_cinemas[0]])
+                #     page.add(self.loading_bar_cinemas[2])
+                #     page.update()
 
-                    page.remove(self.loading_bar[2])
-                    self.loading_bar[2] = ft.Column([ft.Text(estimate_timed), self.loading_bar[0]])
-                    page.add(self.loading_bar[2])
+
+            def loading_bar_subsequent():
+                page.remove(self.loading_bar_cinemas[1], self.loading_bar_cinemas[2], )
+                self.loading_bar_cinemas.clear()
+                page.update()
+                # -------------------
+
+                self.start_time = time.time()
+                self.loading_bar_reviewers.append(ft.ProgressBar(width=400))
+                self.loading_bar_reviewers.append(ft.Text("Collecting ratings", style="headlineSmall", color="amber"))
+                self.loading_bar_reviewers.append(ft.Column([ft.Text("Just a moment!"), self.loading_bar_reviewers[0]]))
+                page.add(self.loading_bar_reviewers[1], self.loading_bar_reviewers[2],
+                         )
+
+                progress = {'progress': 0}
+                while progress['progress'] < 100:
+                    progress = self.archive.get_reviewers_progress()
+                    self.loading_bar_reviewers[0].value = progress['progress'] * 0.01
+                    sleep(LOADING_REFERSH_TIME)
+                    estimate_timed = estimate_time(
+                        start_time=self.start_time, current_item=progress['current'] + 1,
+                        total_items=progress['total'])
+
+                    page.remove(self.loading_bar_reviewers[2])
+                    self.loading_bar_reviewers[2] = ft.Column([ft.Text(estimate_timed), self.loading_bar_reviewers[0]])
+                    page.add(self.loading_bar_reviewers[2])
                     page.update()
 
-                page.remove(self.loading_bar[1], self.loading_bar[2], )
-                self.loading_bar.pop()
-                self.loading_bar.pop()
-                self.loading_bar.pop()
+                page.remove(self.loading_bar_reviewers[1], self.loading_bar_reviewers[2], )
+                self.loading_bar_reviewers.clear()
                 page.update()
 
             txt_number = ft.TextField(value="0", text_align=ft.TextAlign.RIGHT, width=100)
@@ -57,15 +87,20 @@ class GUI():
                     print("Starting.")
 
                     self.start_time = time.time()
-                    self.archive = Archive(
-                        checklist=['YesPlanet', 'RottenTomatoes', 'HotCinema', 'CinemaCity', 'IMDB', 'Metacritic'],
-                        is_screenings=True)
-                    threading.Thread(target=loading_bar).start()
-                    remove_json()
-                    page.remove(self.retrieve_button)
-                    self.archive.initialize()
-                    page.update()
 
+                    self.archive = Archive(
+                        checklist=['YesPlanet', 'HotCinema', 'IMDB'],
+                        is_screenings=True)
+                    remove_json()
+                    thread_1 = threading.Thread(target=loading_bar_initial)
+                    thread_1.start()
+                    self.archive.initialize_cinemas()
+                    thread_1.join()
+                    thread_2 = threading.Thread(target=loading_bar_subsequent)
+                    thread_2.start()
+                    self.archive.initialize_reviewers()
+                    thread_2.join()
+                    page.remove(self.retrieve_button)
                     add_json()
 
                 get_json()
@@ -77,10 +112,10 @@ class GUI():
 
 
             def remove_json():
-                while self.tickets:
-                    page.remove(self.tickets[-1])
-                    self.tickets.pop()
-                    page.update()
+                for ticket in self.tickets:
+                    page.remove(ticket)
+                self.tickets.clear()
+                page.update()
 
             def generate_screenings(screenings):
                 def generate_hours(hours):
@@ -95,7 +130,10 @@ class GUI():
 
                     for x in range(len(tickets)):
                         divide.append(tickets[x])
-                        if x%5==0:
+                        if x == len(tickets) - 1:
+                            all.append(ft.Row(divide))
+                            divide = []
+                        elif x%5==4:
                             all.append(ft.Row(divide))
                             divide = []
 
@@ -114,7 +152,6 @@ class GUI():
                 return tickets
 
             def generate_top_buttons():
-                from PIL import Image
                 items = ['YesPlanet', 'HotCinema', 'CinemaCity', 'RottenTomatoes', 'Metacritic', 'IMDB']
                 l = [ft.IconButton(
                     icon=ft.icons.MOVIE_EDIT,
@@ -156,7 +193,7 @@ class GUI():
 
                                             title=ft.Text(
                                                 movie['title']),
-                                            subtitle=ft.Text(movie['origin']
+                                            subtitle=ft.Text(movie['origin'],
                                                              ),
                                         ),
                                     ]),

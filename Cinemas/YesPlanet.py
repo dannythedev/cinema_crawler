@@ -12,6 +12,8 @@ class YesPlanet(Cinema):
         self.api_url = '{home_url}/data-api-service/v1'.format(home_url=self.home_url)
         self.url = '{api_url}/feed/10100/byName/now-playing?lang=en_GB'.format(api_url=self.api_url)
         self.name = 'Yes Planet'
+        self.progress = 0
+        self.total_progress = 0
 
     def get_movies(self):
         response = self.get(self.url)
@@ -50,6 +52,7 @@ class YesPlanet(Cinema):
         {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""
 
         timetables = dict()
+        self.total_progress = len(theatres)
         for theatre in theatres:
             response = self.get(theatre['url'])
             response = json.loads(response.text)['body']
@@ -60,6 +63,7 @@ class YesPlanet(Cinema):
                 event_date = format_date(date=event['eventDateTime'], from_format='%Y-%m-%dT%H:%M:%S', to_format='%H:%M')
                 timetable[event['filmId']].append(event_date)
             timetables[theatre['displayName']] = timetable
+            self.progress += 1
         return timetables
 
 

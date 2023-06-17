@@ -7,7 +7,7 @@ import datetime
 import requests
 
 IMAGE_NOT_FOUND = 'https://www.prokerala.com/movies/assets/img/no-poster-available.webp'
-
+LOADING_REFERSH_TIME = 0.75
 def regexify(regex, data):
     """Extracts regex string from data string."""
     try:
@@ -24,6 +24,8 @@ def estimate_time(start_time, current_item, total_items):
     items_per_second = current_item / time_elapsed
     items_left = total_items - current_item
     time_left = int(items_left / items_per_second)
+    if time_left < 0:
+        time_left = 0
     return '{0} seconds left.'.format(time_left) if time_left < 120 else '{0} minutes left.'.format(time_left//60)
 
 
