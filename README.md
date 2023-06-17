@@ -4,6 +4,7 @@ A small web-scrapping project. It takes current movie titles from local Israeli 
 ![search](https://github.com/dannythedev/cinema_crawler/assets/99733108/e81eefdf-3885-4a89-acb0-d112371c81fa)
 
 • It shows the average of the entirity of found ratings for each site and sorts it in a decending list to the user's convinience.
+
 • It also shows all screening times for the current date.
 
 # There is also a custom search option now.
