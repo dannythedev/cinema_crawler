@@ -85,6 +85,7 @@ class GUI:
             txt_number = ft.TextField(value="0", text_align=ft.TextAlign.RIGHT, width=100)
 
             def start(e):
+                # e.control.disabled = True
                 def get_json():
                     print("Starting.")
 
@@ -106,8 +107,6 @@ class GUI:
                     add_json()
 
                 get_json()
-
-
 
             def remove_json():
                 for ticket in self.tickets:
@@ -155,10 +154,10 @@ class GUI:
 
             def generate_top_buttons():
                 l = [ft.IconButton(
-                    icon=ft.icons.MOVIE_EDIT,
+                    icon=ft.icons.PLAY_CIRCLE_OUTLINE_SHARP,
                     icon_color="blue400",
-                    icon_size=40,
-                    tooltip="Retrieve Movies",
+                    icon_size=60,
+                    tooltip="Find nearby movies!",
                     on_click=start,
                     data=None,
 
@@ -167,14 +166,14 @@ class GUI:
                 l.append(self.screening_enable_button)
 
                 self.buttons.append(ft.Checkbox(label="Yes Planet", value=False))
-                self.buttons.append(ft.Checkbox(label="Cinema City", value=False))
-                self.buttons.append(ft.Checkbox(label="Hot Cinema", value=False))
-                self.buttons.append(ft.Checkbox(label="IMDB", value=False))
+                self.buttons.append(ft.Checkbox(label="Cinema City   ", value=False))
+                self.buttons.append(ft.Checkbox(label="Hot Cinema    ", value=False))
+                self.buttons.append(ft.Checkbox(label="IMDB       ", value=False))
+                self.buttons.append(ft.Checkbox(label="Metacritic      ", value=False))
                 self.buttons.append(ft.Checkbox(label="RottenTomatoes", value=False))
-                self.buttons.append(ft.Checkbox(label="Metacritic", value=False))
 
                 page.add(ft.Container(content=ft.Column([ft.Row(l),
-                                                        ft.Row(self.buttons[:3]),
+                                                         ft.Row(self.buttons[:3]),
                                                          ft.Row(self.buttons[3:])
                                                          ])))
 
@@ -186,50 +185,48 @@ class GUI:
                     self.retrieve_button
                 )
                 data = read_json()
-                icons = {'genre':ft.icons.ALBUM,
-                         'duration':ft.icons.TIMER,
-                         'trailer':ft.icons.PREVIEW}
+                icons = {'genre': ft.icons.ALBUM,
+                         'duration': ft.icons.TIMER,
+                         'trailer': ft.icons.VIDEO_LIBRARY_ROUNDED}
 
                 for movie in data:
                     attributes = [ft.ListTile(
-                                        leading=ft.Icon(icons[key]),
-                                        title=ft.Text(
-                                            key.capitalize()),
-                                        subtitle=ft.Text(movie[key]),
-                                    ) for key in movie if key in ['genre', 'duration'] and movie[key]]\
-                                 +\
+                        leading=ft.Icon(icons[key]),
+                        title=ft.Text(
+                            key.capitalize()),
+                        subtitle=ft.Text(movie[key]),
+                    ) for key in movie if key in ['genre'] and movie[key]] \
+                                 + \
                                  [ft.ListTile(
-                                        leading=ft.Icon(icons[key]),
-                                        title=ft.Text(
-                                            key.capitalize()),
-                                        subtitle=ft.Text(movie[key][:60]+'...'),
-                                        data = movie[key], on_click=copy_clipboard,
-                                    ) for key in movie if key in ['trailer'] and movie[key]]
-
+                                     leading=ft.Icon(icons[key]),
+                                     title=ft.Text(
+                                         key.capitalize()),
+                                     subtitle=ft.Text(movie[key][:60] + '...'),
+                                     data=movie[key], on_click=copy_clipboard,
+                                 ) for key in movie if key in ['trailer'] and movie[key]]
+                    screenings = [
+                        ft.ListTile(
+                            title=ft.Text(
+                                'Screenings'),
+                            subtitle=ft.Container(content=ft.Column(
+                                generate_screenings(movie['screenings']))),
+                        ),
+                    ] if self.screening_enable_button.value else []
                     attributes = [
-                                    ft.ListTile(
-                                        leading=ft.Icon(ft.icons.STAR),
-                                        title=ft.Text(
-                                            str(movie['total_rating'])[:4]),
-                                        subtitle=ft.Text(
-                                            movie['rating']
-                                        ),
-                                    )] + attributes +\
-                                        [
-                                    ft.ListTile(
-                                        title=ft.Text(
-                                            'Screenings'),
-                                        subtitle=ft.Container(content=ft.Column(
-                                            generate_screenings(movie['screenings']))),
-                                    ),
-                                        ]
+                                     ft.ListTile(
+                                         leading=ft.Icon(ft.icons.STAR),
+                                         title=ft.Text(
+                                             str(movie['total_rating'])[:4], style="titleLarge"),
+                                         subtitle=ft.Text('• '+
+                                             '\n• '.join([str(key)+': '+str(movie['rating'][key]) for key in movie['rating']])
+                                         ),
+                                     )] + attributes + screenings
 
                     for attribute in attributes:
                         key = attribute.title.value.lower()
-                        if key.isdigit():   # Removes rating if it didn't extract it.
+                        if key.isdigit():  # Removes rating if it didn't extract it.
                             if float(key) == 0:
                                 attributes.remove(attribute)
-
 
                     self.tickets.append(ft.Card(
                         content=ft.Container(
@@ -246,7 +243,7 @@ class GUI:
 
                                             title=ft.Text(
                                                 movie['title']),
-                                            subtitle=ft.Text(movie['origin'],
+                                            subtitle=ft.Text(movie['duration'],
                                                              ),
                                         ),
                                     ]),
