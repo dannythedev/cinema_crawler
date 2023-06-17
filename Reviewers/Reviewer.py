@@ -14,11 +14,21 @@ class Reviewer(Request):
     def get_genre(self, movie):
         pass
 
+    @exception_method
+    def get_image(self, movie):
+        pass
+
+    @exception_method
+    def get_trailer(self, movie):
+        pass
+
     def get_attributes(self, movie, url=''):
         """Returns dictionary of ratings. None if it doesn't retrieve it."""
         self.get(url)
         self.get_duration(movie)
         self.get_genre(movie)
+        self.get_image(movie)
+        self.get_trailer(movie)
 
     def initialize(self, movies_list):
         for movie in movies_list:

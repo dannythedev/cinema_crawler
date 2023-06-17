@@ -1,4 +1,4 @@
-from Functions import convert_time, exception_method
+from Functions import convert_time, exception_method, IMAGE_NOT_FOUND
 from Reviewers.Reviewer import Reviewer
 
 
@@ -8,6 +8,19 @@ class Metacritic(Reviewer):
         self.url = 'https://www.metacritic.com/movie/'
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'}
+
+    @exception_method
+    def get_image(self, movie):
+        if movie.image == IMAGE_NOT_FOUND:
+            xpath = str(self.html.get_xpath("//img[@class='summary_img']/@src")[0])
+            if 'poster-default' not in xpath:
+                movie.image = xpath
+
+    @exception_method
+    def get_trailer(self, movie):
+        if not movie.trailer:
+            movie.trailer = str(self.html.get_xpath("//div[@id='videoContainer_wrapper']/@data-mcvideourl")[0])
+
 
     @exception_method
     def get_duration(self, movie):

@@ -1,4 +1,4 @@
-from Functions import exception_method
+from Functions import exception_method, IMAGE_NOT_FOUND
 from Reviewers.Reviewer import Reviewer
 
 
@@ -9,6 +9,13 @@ class IMDB(Reviewer):
         self.search_url = 'https://www.imdb.com/find/?q='
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'}
+
+    @exception_method
+    def get_image(self, movie):
+        if movie.image == IMAGE_NOT_FOUND:
+            xpath = str(self.html.get_xpath("//div[@class='sc-61c73608-1 jLwVZW']//@src")[0])
+            if 'poster-default' not in xpath:
+                movie.image = xpath
 
     @exception_method
     def get_duration(self, movie):

@@ -1,4 +1,4 @@
-from Functions import exception_method
+from Functions import exception_method, IMAGE_NOT_FOUND
 from Reviewers.Reviewer import Reviewer
 
 
@@ -6,6 +6,15 @@ class RottenTomatoes(Reviewer):
     def __init__(self):
         super().__init__()
         self.url = 'https://www.rottentomatoes.com/m/'
+
+
+    @exception_method
+    def get_image(self, movie):
+        if movie.image == IMAGE_NOT_FOUND:
+            xpath = str(self.html.get_xpath("//tile-dynamic[@class='thumbnail']//@src")[0])
+            if 'poster-default' not in xpath:
+                movie.image = xpath
+
 
     @exception_method
     def get_duration(self, movie):

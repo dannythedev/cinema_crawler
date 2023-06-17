@@ -10,12 +10,14 @@ from Archive import EXPORT_FILE, Archive
 from Functions import estimate_time, LOADING_REFERSH_TIME
 
 
-class GUI():
+class GUI:
     def __init__(self):
         self.tickets = []
         self.loading_bar_reviewers = []
         self.loading_bar_cinemas = []
         self.retrieve_button = None
+        self.buttons = []
+        self.screening_enable_button = None
         self.archive = None
 
     def initialize(self):
@@ -30,7 +32,8 @@ class GUI():
                 self.start_time = time.time()
                 self.loading_bar_cinemas.append(ft.ProgressBar(width=400))
                 self.loading_bar_cinemas.append(ft.Text("Retrieving movies", style="headlineSmall", color="blue"))
-                self.loading_bar_cinemas.append(ft.Column([ft.Text("This may take a short while."), self.loading_bar_cinemas[0]]))
+                self.loading_bar_cinemas.append(
+                    ft.Column([ft.Text("This may take a short while."), self.loading_bar_cinemas[0]]))
                 page.add(self.loading_bar_cinemas[1], self.loading_bar_cinemas[2],
                          )
 
@@ -47,7 +50,6 @@ class GUI():
                 #     self.loading_bar_cinemas[2] = ft.Column([ft.Text(estimate_timed), self.loading_bar_cinemas[0]])
                 #     page.add(self.loading_bar_cinemas[2])
                 #     page.update()
-
 
             def loading_bar_subsequent():
                 page.remove(self.loading_bar_cinemas[1], self.loading_bar_cinemas[2], )
@@ -89,8 +91,8 @@ class GUI():
                     self.start_time = time.time()
 
                     self.archive = Archive(
-                        checklist=['YesPlanet', 'HotCinema', 'IMDB'],
-                        is_screenings=True)
+                        checklist=get_checked_items(),
+                        is_screenings=self.screening_enable_button.value)
                     remove_json()
                     thread_1 = threading.Thread(target=loading_bar_initial)
                     thread_1.start()
@@ -105,10 +107,6 @@ class GUI():
 
                 get_json()
 
-            def update_ticket_with_details(e):
-                page.remove(self.tickets[-1])
-                self.tickets.pop()
-                page.update()
 
 
             def remove_json():
@@ -122,7 +120,7 @@ class GUI():
                     tickets = []
                     for hour in hours:
                         tickets.append(ft.TextButton(
-                        hour,
+                            hour,
                         ))
 
                     all = []
@@ -133,11 +131,12 @@ class GUI():
                         if x == len(tickets) - 1:
                             all.append(ft.Row(divide))
                             divide = []
-                        elif x%5==4:
+                        elif x % 5 == 4:
                             all.append(ft.Row(divide))
                             divide = []
 
                     return all
+
                 tickets = []
                 for theatre in screenings:
                     screenings_buttons = generate_hours(screenings[theatre])
@@ -146,13 +145,15 @@ class GUI():
                         title=ft.Text(
                             theatre),
                         subtitle=ft.Container(content=ft.Column(
-                                                screenings_buttons)
+                            screenings_buttons)
                         )
                     ))
                 return tickets
 
+            def get_checked_items():
+                return [button.label.replace(' ', '') for button in self.buttons if button.value]
+
             def generate_top_buttons():
-                items = ['YesPlanet', 'HotCinema', 'CinemaCity', 'RottenTomatoes', 'Metacritic', 'IMDB']
                 l = [ft.IconButton(
                     icon=ft.icons.MOVIE_EDIT,
                     icon_color="blue400",
@@ -162,33 +163,85 @@ class GUI():
                     data=None,
 
                 )]
-                for item in items:
-                    l.append(
-                    ft.Image(
-                        src="icons/{item}.png".format(item=item),
-                        width=50,
-                        height=50,
-                        fit=ft.ImageFit.CONTAIN,
-                    ))
-                return l
+                self.screening_enable_button = ft.Checkbox(label="Get screenings?", value=True)
+                l.append(self.screening_enable_button)
+
+                self.buttons.append(ft.Checkbox(label="Yes Planet", value=False))
+                self.buttons.append(ft.Checkbox(label="Cinema City", value=False))
+                self.buttons.append(ft.Checkbox(label="Hot Cinema", value=False))
+                self.buttons.append(ft.Checkbox(label="IMDB", value=False))
+                self.buttons.append(ft.Checkbox(label="RottenTomatoes", value=False))
+                self.buttons.append(ft.Checkbox(label="Metacritic", value=False))
+
+                page.add(ft.Container(content=ft.Column([ft.Row(l),
+                                                        ft.Row(self.buttons[:3]),
+                                                         ft.Row(self.buttons[3:])
+                                                         ])))
+
+            def copy_clipboard(e):
+                page.set_clipboard(e.control.data)
 
             def add_json():
                 page.add(
                     self.retrieve_button
                 )
                 data = read_json()
+                icons = {'genre':ft.icons.ALBUM,
+                         'duration':ft.icons.TIMER,
+                         'trailer':ft.icons.PREVIEW}
+
                 for movie in data:
+                    attributes = [ft.ListTile(
+                                        leading=ft.Icon(icons[key]),
+                                        title=ft.Text(
+                                            key.capitalize()),
+                                        subtitle=ft.Text(movie[key]),
+                                    ) for key in movie if key in ['genre', 'duration'] and movie[key]]\
+                                 +\
+                                 [ft.ListTile(
+                                        leading=ft.Icon(icons[key]),
+                                        title=ft.Text(
+                                            key.capitalize()),
+                                        subtitle=ft.Text(movie[key][:60]+'...'),
+                                        data = movie[key], on_click=copy_clipboard,
+                                    ) for key in movie if key in ['trailer'] and movie[key]]
+
+                    attributes = [
+                                    ft.ListTile(
+                                        leading=ft.Icon(ft.icons.STAR),
+                                        title=ft.Text(
+                                            str(movie['total_rating'])[:4]),
+                                        subtitle=ft.Text(
+                                            movie['rating']
+                                        ),
+                                    )] + attributes +\
+                                        [
+                                    ft.ListTile(
+                                        title=ft.Text(
+                                            'Screenings'),
+                                        subtitle=ft.Container(content=ft.Column(
+                                            generate_screenings(movie['screenings']))),
+                                    ),
+                                        ]
+
+                    for attribute in attributes:
+                        key = attribute.title.value.lower()
+                        if key.isdigit():   # Removes rating if it didn't extract it.
+                            if float(key) == 0:
+                                attributes.remove(attribute)
+
+
                     self.tickets.append(ft.Card(
                         content=ft.Container(
                             content=ft.Column(
                                 [
                                     ft.Row([
                                         ft.Image(
-                                        src=movie['image'],
-                                        width=75,
-                                        height=100,
-                                        fit=ft.ImageFit.CONTAIN,
-                                    ),
+                                            src=movie['image'],
+                                            width=75,
+                                            height=100,
+                                            fit=ft.ImageFit.CONTAIN,
+                                        ),
                                         ft.ListTile(
 
                                             title=ft.Text(
@@ -197,50 +250,14 @@ class GUI():
                                                              ),
                                         ),
                                     ]),
-
-                                    ft.ListTile(
-                                        leading=ft.Icon(ft.icons.STAR),
-                                        title=ft.Text(
-                                            str(movie['total_rating'])[:4]),
-                                        subtitle=ft.Text(
-                                            movie['rating']
-                                        ),
-                                    ),
-
-                                    ft.ListTile(
-                                        leading=ft.Icon(ft.icons.ALBUM),
-                                        title=ft.Text(
-                                        'Genre'),
-                                        subtitle=ft.Text(movie['genre']
-                                        ),
-                                    ),
-                                    ft.ListTile(
-                                        leading=ft.Icon(ft.icons.TIMER),
-                                        title=ft.Text(
-                                            'Duration'),
-                                        subtitle=ft.Text(movie['duration']
-                                                         ),
-                                    ),
-                                    ft.ListTile(
-                                        leading=ft.Icon(ft.icons.MOVIE_FILTER),
-                                        title=ft.Text(
-                                            'Trailer'),
-                                        subtitle=ft.Text(movie['trailer']
-                                                         ),
-                                    ),
-                                    ft.ListTile(
-                                        title=ft.Text(
-                                            'Screenings'),
-                                        subtitle=ft.Container(content=ft.Column(
-                                                generate_screenings(movie['screenings']))),
-                                    ),
+                                    ft.Column(attributes),
                                     ft.Row(
-                                        [ft.TextButton("Show details", on_click=update_ticket_with_details),
+                                        [ft.TextButton("Show details", on_click=copy_clipboard),
                                          ft.TextButton("Listen"),
                                          ],
                                         alignment=ft.MainAxisAlignment.END,
                                     ),
-                                    ]
+                                ]
                             ),
                             width=430,
                             padding=10,
