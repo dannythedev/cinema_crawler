@@ -19,6 +19,7 @@ class GUI:
         self.buttons = []
         self.screening_enable_button = None
         self.archive = None
+        self.search_button = None
 
     def initialize(self):
         def main(page: ft.Page):
@@ -93,7 +94,7 @@ class GUI:
 
                     self.archive = Archive(
                         checklist=get_checked_items(),
-                        is_screenings=self.screening_enable_button.value)
+                        is_screenings=self.screening_enable_button.value, custom_search=custom_search())
                     remove_json()
                     thread_1 = threading.Thread(target=loading_bar_initial)
                     thread_1.start()
@@ -115,12 +116,13 @@ class GUI:
                 page.update()
 
             def generate_screenings(screenings):
+
                 def generate_hours(hours):
                     tickets = []
                     for hour in hours:
-                        tickets.append(ft.TextButton(
-                            hour,
-                        ))
+                        tickets.append(ft.TextButton(hour,
+
+                                                     ))
 
                     all = []
                     divide = []
@@ -152,19 +154,31 @@ class GUI:
             def get_checked_items():
                 return [button.label.replace(' ', '') for button in self.buttons if button.value]
 
+            def custom_search():
+                return self.search_button.value
+            def custom_search_change(e):
+                for button in self.buttons[:3]:
+                    button.value = False
+                    if not e.control.value:
+                        button.disabled = False
+                    else:
+                        button.disabled = True
+                page.update()
+
             def generate_top_buttons():
                 l = [ft.IconButton(
                     icon=ft.icons.PLAY_CIRCLE_OUTLINE_SHARP,
                     icon_color="blue400",
-                    icon_size=60,
+                    icon_size=50,
                     tooltip="Find nearby movies!",
                     on_click=start,
                     data=None,
 
                 )]
-                self.screening_enable_button = ft.Checkbox(label="Get screenings?", value=True)
-                l.append(self.screening_enable_button)
-
+                self.screening_enable_button = ft.Switch(value=True)
+                self.search_button = ft.TextField(on_change=custom_search_change, label="Custom Search", width=150, on_submit=custom_search)
+                l.append(ft.Row([self.search_button, self.screening_enable_button,
+                                    ft.Text("Get screenings?", style="titleSmall")]))
                 self.buttons.append(ft.Checkbox(label="Yes Planet", value=False))
                 self.buttons.append(ft.Checkbox(label="Cinema City   ", value=False))
                 self.buttons.append(ft.Checkbox(label="Hot Cinema    ", value=False))
@@ -179,6 +193,17 @@ class GUI:
 
             def copy_clipboard(e):
                 page.set_clipboard(e.control.data)
+
+            def collapse_text(e, hidden, empty):
+                if hasattr(e.control.subtitle, 'value'):
+                    if e.control.subtitle.value == empty.value:
+                        return
+                    elif e.control.subtitle.value == hidden.value:
+                        e.control.subtitle = e.control.data
+                else:
+                    e.control.subtitle = hidden
+
+                page.update()
 
             def add_json():
                 page.add(
@@ -204,22 +229,30 @@ class GUI:
                                      subtitle=ft.Text(movie[key][:60] + '...'),
                                      data=movie[key], on_click=copy_clipboard,
                                  ) for key in movie if key in ['trailer'] and movie[key]]
+
+                    screenings_data = {'hidden': ft.Text('Click to show screenings.', color="blue400"),
+                                       'shown': ft.Container(content=ft.Column(
+                                           generate_screenings(movie['screenings']))),
+                                       'empty': ft.Text('None for today.', color="pink600")}
+
                     screenings = [
-                        ft.ListTile(
-                            title=ft.Text(
-                                'Screenings'),
-                            subtitle=ft.Container(content=ft.Column(
-                                generate_screenings(movie['screenings']))),
-                        ),
+                        ft.ListTile(on_click=lambda e: collapse_text(e, screenings_data['hidden'], screenings_data['empty']),
+                                    data=screenings_data['shown'],
+                                    title=ft.Text(
+                                        'Screenings'),
+                                    subtitle=screenings_data['hidden'] if movie['screenings'] else screenings_data['empty'],
+                                    ),
                     ] if self.screening_enable_button.value else []
                     attributes = [
                                      ft.ListTile(
                                          leading=ft.Icon(ft.icons.STAR),
                                          title=ft.Text(
                                              str(movie['total_rating'])[:4], style="titleLarge"),
-                                         subtitle=ft.Text('• '+
-                                             '\n• '.join([str(key)+': '+str(movie['rating'][key]) for key in movie['rating']])
-                                         ),
+                                         subtitle=ft.Text('• ' +
+                                                          '\n• '.join(
+                                                              [str(key) + ': ' + str(movie['rating'][key]) for key in
+                                                               movie['rating']])
+                                                          ),
                                      )] + attributes + screenings
 
                     for attribute in attributes:
@@ -249,9 +282,7 @@ class GUI:
                                     ]),
                                     ft.Column(attributes),
                                     ft.Row(
-                                        [ft.TextButton("Show details", on_click=copy_clipboard),
-                                         ft.TextButton("Listen"),
-                                         ],
+                                        [ft.TextButton("Show details"),],
                                         alignment=ft.MainAxisAlignment.END,
                                     ),
                                 ]

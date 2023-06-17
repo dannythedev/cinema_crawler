@@ -3,7 +3,8 @@ import threading
 from Cinemas.YesPlanet import YesPlanet
 from Cinemas.CinemaCity import CinemaCity
 from Cinemas.HotCinema import HotCinema
-from Functions import capitalize_sentence
+from Functions import capitalize_sentence, IMAGE_NOT_FOUND
+from Movie import Movie
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
@@ -12,7 +13,7 @@ EXPORT_FILE = 'movies.json'
 
 
 class Archive:
-    def __init__(self, checklist=[], is_screenings=False):
+    def __init__(self, checklist=[], is_screenings=False, custom_search=None):
         self.current, self.total = 0, 0
         self.cinemas = []
         movies_dict = {'YesPlanet': YesPlanet(),
@@ -24,34 +25,38 @@ class Archive:
         self.movies = []
         self.checklist = checklist
         self.is_screenings = is_screenings
+        self.custom_search = custom_search
 
 
     def initialize_cinemas(self):
-        for cinema in self.cinemas:
-            exported_movies = cinema.get_movies()
-            self.movies += exported_movies
-            if self.is_screenings:
-                cinema.set_movie_screenings(exported_movies)
+        if not self.custom_search:
+            for cinema in self.cinemas:
+                exported_movies = cinema.get_movies()
+                self.movies += exported_movies
+                if self.is_screenings:
+                    cinema.set_movie_screenings(exported_movies)
 
-        unique_list = dict()
-        # Iterate over each item in the original list
-        for item in self.movies:
-            # Check if the item is already in the unique list
-            if item.title not in list(unique_list.keys()):
-                # If it's not, add it to the unique list
-                unique_list.update({item.title: item})
-            else:
-                if str(item.origin) not in str(unique_list[item.title].origin):
-                    unique_list[item.title].origin.update(item.origin)
-                    for screening in item.screenings:
-                        unique_list[item.title].screenings.update({screening: item.screenings[screening]})
-                        # Sort list by time and remove duplicates.
-                        unique_list[item.title].screenings[screening] = list(
-                            set(unique_list[item.title].screenings[screening]))
-                        unique_list[item.title].screenings[screening] = \
-                            sorted(unique_list[item.title].screenings[screening],
-                                   key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
-        self.movies = list(unique_list.values())
+            unique_list = dict()
+            # Iterate over each item in the original list
+            for item in self.movies:
+                # Check if the item is already in the unique list
+                if item.title not in list(unique_list.keys()):
+                    # If it's not, add it to the unique list
+                    unique_list.update({item.title: item})
+                else:
+                    if str(item.origin) not in str(unique_list[item.title].origin):
+                        unique_list[item.title].origin.update(item.origin)
+                        for screening in item.screenings:
+                            unique_list[item.title].screenings.update({screening: item.screenings[screening]})
+                            # Sort list by time and remove duplicates.
+                            unique_list[item.title].screenings[screening] = list(
+                                set(unique_list[item.title].screenings[screening]))
+                            unique_list[item.title].screenings[screening] = \
+                                sorted(unique_list[item.title].screenings[screening],
+                                       key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
+            self.movies = list(unique_list.values())
+        else:
+            self.movies = [Movie(title=self.custom_search, suffix=self.custom_search.replace(' ', '-').lower(), image=IMAGE_NOT_FOUND, trailer='', genre=None, origin=None)]
 
         self.reviewers = []
         reviewers_dict = {'Metacritic': Metacritic(),
