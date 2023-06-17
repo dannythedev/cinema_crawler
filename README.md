@@ -1,5 +1,5 @@
 # cinema_crawler
-This repository takes current movie titles from local Israeli Cinemas (Yes Planet, Cinema City and Hot Cinema) APIs and compares their rating values in critic sites such as IMDB, RottenTomatoes and Metacritic.
+A small web-scrapping project. It takes current movie titles from local Israeli Cinemas (Yes Planet, Cinema City and Hot Cinema) APIs and compares their rating values in critic sites such as IMDB, RottenTomatoes and Metacritic. GUI built using the Flet library.
 
 ![search](https://github.com/dannythedev/cinema_crawler/assets/99733108/e81eefdf-3885-4a89-acb0-d112371c81fa)
 
