@@ -1,14 +1,10 @@
 import datetime
-import json
-
-import bs4
 from Cinemas.Cinema import Cinema
 from Functions import is_english, regexify, find_nearest_addresses, IMAGE_NOT_FOUND, suffixify, filter_hour_format, \
     sort_and_remove_duplicate_hours
 from Movie import Movie
 from lxml import etree
-
-from app import is_image_url
+from Functions import is_image_url
 
 
 class LevCinema(Cinema):
@@ -16,6 +12,7 @@ class LevCinema(Cinema):
         super().__init__()
         self.home_url = 'https://www.lev.co.il/'
         self.url = '{home_url}en/movies/'.format(home_url=self.home_url)
+        self.api_url = '{home_url}api/presentations?includeSynopsis=0'
         self.name = 'Lev Cinema'
 
     def get_movies(self):

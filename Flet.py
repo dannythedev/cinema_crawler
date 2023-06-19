@@ -3,7 +3,7 @@ import os
 import threading
 import time
 from time import sleep
-
+import webbrowser
 import flet as ft
 
 from Archive import EXPORT_FILE, Archive
@@ -196,7 +196,10 @@ class GUI:
                                                          ])))
 
             def copy_clipboard(e):
-                page.set_clipboard(e.control.data)
+                data = e.control.data
+                page.set_clipboard(data)
+                if data.startswith('https://'):
+                    webbrowser.open(data)
 
             def collapse_text(e, hidden, empty):
                 if hasattr(e.control.subtitle, 'value'):

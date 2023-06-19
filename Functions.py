@@ -182,3 +182,7 @@ def sort_and_remove_duplicate_hours(hours):
     # Sort the hours using custom key function
     sorted_hours = sorted(unique_hours, key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
     return sorted_hours
+
+def is_image_url(url):
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+    return any(url.lower().endswith(ext) for ext in image_extensions)

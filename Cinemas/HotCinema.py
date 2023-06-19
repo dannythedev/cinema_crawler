@@ -26,7 +26,7 @@ class HotCinema(Cinema):
                 movies_list.append(Movie(title=title.replace('-', ' ').lower(),
                           suffix=suffixify(title),
                           image=IMAGE_NOT_FOUND,
-                          trailer='',
+                          trailer=self.html.get_xpath("//div[@class='ytp-title-text']/a/@href"),
                           genre=[],
                           origin={'Hot Cinema': x['ID']}))
         return movies_list
