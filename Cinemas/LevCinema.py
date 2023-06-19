@@ -58,7 +58,7 @@ class LevCinema(Cinema):
         {theatre1:{movieid1: screenings, movieid2: screenings...}, theatre2:{movieid3: screenings}}"""
 
         timetables = dict()
-
+        today = datetime.datetime.now().date().strftime('%d/%m')
         for movie in movies:
             self.get(movie.url)
             theatres_in_movie = self.html.get_xpath("//div[@class='forloc 2']")
@@ -68,8 +68,10 @@ class LevCinema(Cinema):
                 theatre_display_name = str(self.html.get_xpath("//div[@class='showlist 456'][1]//a[@class='mobilelink']/@data-loc")[0])
                 if theatre_display_name not in timetables:
                     timetables.update({theatre_display_name:dict()})
-                screenings = filter_hour_format(self.html.get_xpath("//div[@class='showlist 456'][1]//a[@class='mobilelink']/text()"))
-                if screenings:
-                    timetables[theatre_display_name].update({movie.origin[self.name]:sort_and_remove_duplicate_hours(screenings)})
+                # Check if next screening is today.
+                if regexify(r'\d{2}/\d{2}', self.html.get_xpath("//div[@class='showlist 456']/span[1]/text()")[0]) == today:
+                    screenings = filter_hour_format(self.html.get_xpath("//div[@class='showlist 456'][1]//a[@class='mobilelink']/text()"))
+                    if screenings:
+                        timetables[theatre_display_name].update({movie.origin[self.name]:sort_and_remove_duplicate_hours(screenings)})
             self.progress += 1
         return timetables
