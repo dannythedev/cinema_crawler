@@ -3,7 +3,7 @@ import json
 
 import bs4
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify, find_nearest_addresses, IMAGE_NOT_FOUND
+from Functions import is_english, regexify, find_nearest_addresses, IMAGE_NOT_FOUND, suffixify
 from Movie import Movie
 from lxml import etree
 
@@ -49,7 +49,7 @@ class CinemaCity(Cinema):
                 title = str(title[0])
                 if is_english(title):
                     movies_list.append(Movie(title=title.lower(),
-                                             suffix=title.replace(' ', '-').lower(),
+                                             suffix=suffixify(title),
                                              trailer='',
                                              genre=[],
                                              image=IMAGE_NOT_FOUND,

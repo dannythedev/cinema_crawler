@@ -8,6 +8,8 @@ import requests
 
 IMAGE_NOT_FOUND = 'https://www.prokerala.com/movies/assets/img/no-poster-available.webp'
 LOADING_REFERSH_TIME = 0.75
+
+
 def regexify(regex, data):
     """Extracts regex string from data string."""
     try:
@@ -15,8 +17,10 @@ def regexify(regex, data):
     except:
         return
 
+
 def is_english(text):
     return bool(re.match('^[a-zA-Z0-9\s!@#$%^&*(),.?":{}|<>_-]*$', text))
+
 
 def estimate_time(start_time, current_item, total_items):
     # Calculate the estimated time left
@@ -26,7 +30,7 @@ def estimate_time(start_time, current_item, total_items):
     time_left = int(items_left / items_per_second)
     if time_left < 0:
         time_left = 0
-    return '{0} seconds left.'.format(time_left) if time_left < 120 else '{0} minutes left.'.format(time_left//60)
+    return '{0} seconds left.'.format(time_left) if time_left < 120 else '{0} minutes left.'.format(time_left // 60)
 
 
 def convert_time(time_str):
@@ -38,7 +42,9 @@ def convert_time(time_str):
 
 def capitalize_sentence(sentence):
     words = sentence.split()
-    return ' '.join([word.capitalize() if (word.lower() != 'of' and word.lower() != 'a') or index == 0 else word for index, word in enumerate(words)])
+    return ' '.join(
+        [word.capitalize() if (word.lower() != 'of' and word.lower() != 'a') or index == 0 else word for index, word in
+         enumerate(words)])
 
 
 def exception_method(func):
@@ -49,10 +55,12 @@ def exception_method(func):
             return result
         except Exception as e:
             return f"Error: {str(e)}"
+
     return wrapper
 
 
 import math
+
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     # Convert coordinates to radians
@@ -86,6 +94,7 @@ def find_nearest_addresses(addresses):
 
     return nearest_addresses
 
+
 def is_address_in_range(address):
     if MY_LOCATION is None:
         return None
@@ -93,6 +102,7 @@ def is_address_in_range(address):
     address_lat, address_lon = address['latitude'], address['longitude']
     distance = calculate_distance(my_lat, my_lon, address_lat, address_lon)
     return distance <= RADIUS_KM
+
 
 def get_location_from_ip():
     response = requests.get('https://ipapi.co/json/')
@@ -103,8 +113,57 @@ def get_location_from_ip():
         return latitude, longitude
     print('Failed to retrieve location information.')
 
+
 MY_LOCATION = get_location_from_ip()
 RADIUS_KM = 20
 
+
 def format_date(date, from_format, to_format):
     return datetime.datetime.strptime(date, from_format).strftime(to_format)
+
+
+def suffixify(s):
+    return s.replace(' ', '-').replace(':', '').replace('&', '').replace('.', '').lower()
+
+def compare_movie_names(movie_name1, movie_name2):
+    # Remove non-alphanumeric characters and convert to lowercase
+    movie_name1_cleaned = ''.join(e for e in movie_name1 if e.isalnum()).lower()
+    movie_name2_cleaned = ''.join(e for e in movie_name2 if e.isalnum()).lower()
+
+    # Check if the cleaned names are equal
+    if movie_name1_cleaned == movie_name2_cleaned:
+        return True
+
+    # Define variations of words that may appear in movie titles
+    word_variations = {
+        "volume": ["vol.", "volumes", "vols"],
+        "part": ["pt.", "parts", "pts"],
+        "chapter": ["ch.", "chapters", "chs"],
+        "edition": ["ed.", "eds", "editions"],
+        "episode": ["ep.", "eps", "episodes"],
+        "season": ["seas.", "seasons"],
+        "special": ["spec.", "specials"],
+        "director's cut": ["dc", "director's"],
+        "extended": ["ext.", "extended version"],
+        "ultimate": ["ult.", "ultimate edition"],
+        "anniversary": ["anniv.", "anniversary edition"],
+        # Add more variations as needed
+    }
+
+    # Check for specific variations in the names
+    for word, variations in word_variations.items():
+        if any(variation in movie_name1_cleaned for variation in variations) and \
+                any(variation in movie_name2_cleaned for variation in variations):
+            # Extract the word from both names
+            word_extract1 = [var for var in variations if var in movie_name1_cleaned][0]
+            word_extract2 = [var for var in variations if var in movie_name2_cleaned][0]
+
+            # Remove the word from the cleaned names
+            movie_name1_cleaned = movie_name1_cleaned.replace(word_extract1, "")
+            movie_name2_cleaned = movie_name2_cleaned.replace(word_extract2, "")
+
+            # Compare the cleaned names
+            if movie_name1_cleaned == movie_name2_cleaned:
+                return True
+
+    return False

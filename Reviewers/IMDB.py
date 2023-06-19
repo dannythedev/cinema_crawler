@@ -1,4 +1,4 @@
-from Functions import exception_method, IMAGE_NOT_FOUND
+from Functions import exception_method, IMAGE_NOT_FOUND, suffixify
 from Reviewers.Reviewer import Reviewer
 
 
@@ -32,7 +32,7 @@ class IMDB(Reviewer):
         self.get(self.search_url + movie.title)
         url = self.html.get_xpath("//a[@class='ipc-metadata-list-summary-item__t']/@href")[0]
         title = self.html.get_xpath("//a[@class='ipc-metadata-list-summary-item__t']/text()")[0]
-        if title.lower().replace(' ', '-').replace(':', '').replace('&', '') == movie.suffix:
+        if suffixify(title) == movie.suffix:
             super().get_attributes(movie, url=self.url + url)
         else:
             return

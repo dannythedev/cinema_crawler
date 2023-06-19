@@ -3,7 +3,7 @@ import threading
 from Cinemas.YesPlanet import YesPlanet
 from Cinemas.CinemaCity import CinemaCity
 from Cinemas.HotCinema import HotCinema
-from Functions import capitalize_sentence, IMAGE_NOT_FOUND
+from Functions import capitalize_sentence, IMAGE_NOT_FOUND, suffixify
 from Movie import Movie
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
@@ -29,34 +29,37 @@ class Archive:
 
 
     def initialize_cinemas(self):
+        def update_movies(movie_list):
+            # Create a dictionary to store suffixes and their corresponding movies
+            suffix_dict = {}
+
+            # Iterate over the movie list
+            for movie in movie_list:
+                # Check if the suffix already exists in the dictionary
+                if movie.suffix in suffix_dict:
+                    # Get the existing movie with the same suffix
+                    existing_movie = suffix_dict[movie.suffix]
+
+                    # Fuse the origin and screenings attributes
+                    existing_movie.origin.update(movie.origin)
+                    existing_movie.screenings.update(movie.screenings)
+
+                else:
+                    # Add the movie to the dictionary if the suffix doesn't exist
+                    suffix_dict[movie.suffix] = movie
+
+            # Return the updated list without duplicate suffixes
+            return list(suffix_dict.values())
+
         if not self.custom_search:
             for cinema in self.cinemas:
                 exported_movies = cinema.get_movies()
                 self.movies += exported_movies
                 if self.is_screenings:
                     cinema.set_movie_screenings(exported_movies)
-
-            unique_list = dict()
-            # Iterate over each item in the original list
-            for item in self.movies:
-                # Check if the item is already in the unique list
-                if item.title not in list(unique_list.keys()):
-                    # If it's not, add it to the unique list
-                    unique_list.update({item.title: item})
-                else:
-                    if str(item.origin) not in str(unique_list[item.title].origin):
-                        unique_list[item.title].origin.update(item.origin)
-                        for screening in item.screenings:
-                            unique_list[item.title].screenings.update({screening: item.screenings[screening]})
-                            # Sort list by time and remove duplicates.
-                            unique_list[item.title].screenings[screening] = list(
-                                set(unique_list[item.title].screenings[screening]))
-                            unique_list[item.title].screenings[screening] = \
-                                sorted(unique_list[item.title].screenings[screening],
-                                       key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
-            self.movies = list(unique_list.values())
+            self.movies = update_movies(self.movies)
         else:
-            self.movies = [Movie(title=self.custom_search, suffix=self.custom_search.replace(' ', '-').lower(), image=IMAGE_NOT_FOUND, trailer='', genre=None, origin=None)]
+            self.movies = [Movie(title=self.custom_search, suffix=suffixify(self.custom_search), image=IMAGE_NOT_FOUND, trailer='', genre=None, origin=None)]
 
         self.reviewers = []
         reviewers_dict = {'Metacritic': Metacritic(),

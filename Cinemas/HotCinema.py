@@ -2,7 +2,8 @@ import json
 import datetime
 
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify, is_address_in_range, find_nearest_addresses, format_date, IMAGE_NOT_FOUND
+from Functions import is_english, regexify, is_address_in_range, find_nearest_addresses, format_date, IMAGE_NOT_FOUND, \
+    suffixify
 from Movie import Movie
 
 
@@ -23,7 +24,7 @@ class HotCinema(Cinema):
             title = regexify(regex='/movie/\d*/(.*)', data=x['PageUrl'])
             if is_english(title):
                 movies_list.append(Movie(title=title.replace('-', ' ').lower(),
-                          suffix=title,
+                          suffix=suffixify(title),
                           image=IMAGE_NOT_FOUND,
                           trailer='',
                           genre=[],

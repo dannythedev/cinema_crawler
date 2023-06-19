@@ -1,7 +1,7 @@
 import datetime
 import json
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify, format_date
+from Functions import is_english, regexify, format_date, suffixify
 from Movie import Movie
 
 
@@ -19,7 +19,7 @@ class YesPlanet(Cinema):
         response = self.get(self.url)
         movies = json.loads(response.text)['body']['posters']
         return [Movie(title=x['featureTitle'].lower(),
-                      suffix=regexify(regex='films/(.*)/', data=x['url']),
+                      suffix=suffixify(regexify(regex='films/(.*)/', data=x['url'])),
                       image=x['mediaList'][-2]['url'],
                       trailer=x['mediaList'][-1]['url'],
                       genre=self.filter_categories_in_list(x['attributes']),

@@ -152,7 +152,7 @@ class GUI:
                 return tickets
 
             def get_checked_items():
-                return [button.label.replace(' ', '') for button in self.buttons if button.value]
+                return [button.tooltip.replace(' ', '') for button in self.buttons if button.value]
 
             def custom_search():
                 return self.search_button.value
@@ -179,16 +179,19 @@ class GUI:
                 self.search_button = ft.TextField(on_change=custom_search_change, label="Custom Search", width=150, on_submit=custom_search)
                 l.append(ft.Row([self.search_button, self.screening_enable_button,
                                     ft.Text("Get screenings?", style="titleSmall")]))
-                self.buttons.append(ft.Checkbox(label="Yes Planet", value=False))
-                self.buttons.append(ft.Checkbox(label="Cinema City   ", value=False))
-                self.buttons.append(ft.Checkbox(label="Hot Cinema    ", value=False))
-                self.buttons.append(ft.Checkbox(label="IMDB       ", value=False))
-                self.buttons.append(ft.Checkbox(label="Metacritic      ", value=False))
-                self.buttons.append(ft.Checkbox(label="RottenTomatoes", value=False))
+                self.buttons.append(ft.Checkbox(data='Z70MR', label='  ', value=False, tooltip="Yes Planet"))
+                self.buttons.append(ft.Checkbox(data='Z7RJ0', label='  ', value=False, tooltip="Cinema City"))
+                self.buttons.append(ft.Checkbox(data='Z7qum', label='  ', value=False, tooltip="Hot Cinema"))
+                self.buttons.append(ft.Checkbox(data='Z7UUU', label='  ', value=False, tooltip="IMDB"))
+                self.buttons.append(ft.Checkbox(data='Z7kQB', label='  ', value=False, tooltip="Metacritic"))
+                self.buttons.append(ft.Checkbox(data='Z7neQ', label='  ', value=False, tooltip="RottenTomatoes"))
+
+                avatars = [ft.CircleAvatar(tooltip=button.tooltip, foreground_image_url='https://imgtr.ee/images/2023/06/18/{id}.png'
+                                           .format(id=button.data))  for button in self.buttons]
 
                 page.add(ft.Container(content=ft.Column([ft.Row(l),
-                                                         ft.Row(self.buttons[:3]),
-                                                         ft.Row(self.buttons[3:])
+                                                         ft.Row(avatars),
+                                                         ft.Row(self.buttons)
                                                          ])))
 
             def copy_clipboard(e):
