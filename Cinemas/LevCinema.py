@@ -50,10 +50,7 @@ class LevCinema(Cinema):
         Then filters out branches that are outside a 20 km radius.
         Returns list of dictionaries as such:
         [{id:'', latitude:'', longitude:'', displayName:'', url:''}]"""
-        response = self.get('{home_url}cinemas/'.format(home_url=self.home_url))
-        data = dict(zip(self.html.get_xpath("//p/a/img/@alt"), self.html.get_xpath("//p/a/@href")))
-        return [{'id': '', 'latitude': '', 'longitude': '',
-                 'displayName': key.replace('בית קולנוע', '').replace('שוהם', 'שהם').strip(), 'url': data[key].strip()} for key in data]
+        return []
 
     def get_theatre_screenings(self, theatres, movies=None):
         """Gets all movie screenings from theatres list.
@@ -61,9 +58,7 @@ class LevCinema(Cinema):
         {theatre1:{movieid1: screenings, movieid2: screenings...}, theatre2:{movieid3: screenings}}"""
 
         timetables = dict()
-        for theatre in theatres:
-            timetables.update({theatre['displayName']:dict()})
-        self.total_progress = len(theatres)
+
         for movie in movies:
             self.get(movie.url)
             theatres_in_movie = self.html.get_xpath("//div[@class='forloc 2']")
@@ -71,7 +66,10 @@ class LevCinema(Cinema):
             for theatre in theatres_in_movie:
                 self.html.set(theatre)
                 theatre_display_name = str(self.html.get_xpath("//div[@class='showlist 456'][1]//a[@class='mobilelink']/@data-loc")[0])
+                if theatre_display_name not in timetables:
+                    timetables.update({theatre_display_name:dict()})
                 screenings = filter_hour_format(self.html.get_xpath("//div[@class='showlist 456'][1]//a[@class='mobilelink']/text()"))
-                timetables[theatre_display_name].update({movie.origin[self.name]:sort_and_remove_duplicate_hours(screenings)})
-            self.progress+=1
+                if screenings:
+                    timetables[theatre_display_name].update({movie.origin[self.name]:sort_and_remove_duplicate_hours(screenings)})
+            self.progress += 1
         return timetables
