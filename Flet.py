@@ -157,7 +157,7 @@ class GUI:
             def custom_search():
                 return self.search_button.value
             def custom_search_change(e):
-                for button in self.buttons[:3]:
+                for button in self.buttons[:4]:
                     button.value = False
                     if not e.control.value:
                         button.disabled = False
@@ -179,19 +179,20 @@ class GUI:
                 self.search_button = ft.TextField(on_change=custom_search_change, label="Custom Search", width=150, on_submit=custom_search)
                 l.append(ft.Row([self.search_button, self.screening_enable_button,
                                     ft.Text("Get screenings?", style="titleSmall")]))
-                self.buttons.append(ft.Checkbox(data='Z70MR', label='  ', value=False, tooltip="Yes Planet"))
-                self.buttons.append(ft.Checkbox(data='Z7RJ0', label='  ', value=False, tooltip="Cinema City"))
-                self.buttons.append(ft.Checkbox(data='Z7qum', label='  ', value=False, tooltip="Hot Cinema"))
-                self.buttons.append(ft.Checkbox(data='Z7UUU', label='  ', value=False, tooltip="IMDB"))
-                self.buttons.append(ft.Checkbox(data='Z7kQB', label='  ', value=False, tooltip="Metacritic"))
-                self.buttons.append(ft.Checkbox(data='Z7neQ', label='  ', value=False, tooltip="RottenTomatoes"))
 
-                avatars = [ft.CircleAvatar(tooltip=button.tooltip, foreground_image_url='https://imgtr.ee/images/2023/06/18/{id}.png'
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9hos', value=False, tooltip="Yes Planet"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z94DD', value=False, tooltip="Cinema City"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z95yc', value=False, tooltip="Hot Cinema"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='ZUnwJ', value=False, tooltip="Lev Cinema"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9Njn', value=False, tooltip="IMDB"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9VmY', value=False, tooltip="Metacritic"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9WEq', value=False, tooltip="RottenTomatoes"))
+
+                avatars = [ft.CircleAvatar(radius=27, tooltip=button.tooltip, foreground_image_url='https://imgtr.ee/images/2023/06/19/{id}.png'
                                            .format(id=button.data))  for button in self.buttons]
-
+                columns = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars))])
                 page.add(ft.Container(content=ft.Column([ft.Row(l),
-                                                         ft.Row(avatars),
-                                                         ft.Row(self.buttons)
+                                                         columns
                                                          ])))
 
             def copy_clipboard(e):

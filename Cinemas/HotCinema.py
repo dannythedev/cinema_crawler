@@ -59,7 +59,7 @@ class HotCinema(Cinema):
     def get_theatre_screenings(self, theatres, movies=None):
         """Gets all movie screenings from theatres list.
         Returns dictionary which values are a list of dictionaries as such:
-        {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""
+        {theatre1:{movieid1: screenings, movieid2: screenings...}, theatre2:{movieid3: screenings}}"""
 
         timetables = dict()
         today_date = datetime.datetime.now().strftime('%d/%m/%Y')

@@ -167,3 +167,18 @@ def compare_movie_names(movie_name1, movie_name2):
                 return True
 
     return False
+
+
+import re
+
+def filter_hour_format(strings):
+    pattern = r'^\d{2}:\d{2}$'  # Regex pattern for 'hh:mm' format
+    # Use list comprehension to filter strings
+    return [s.strip() for s in strings if regexify(pattern, s.strip())]
+
+def sort_and_remove_duplicate_hours(hours):
+    # Remove duplicates using set()
+    unique_hours = list(set(hours))
+    # Sort the hours using custom key function
+    sorted_hours = sorted(unique_hours, key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
+    return sorted_hours

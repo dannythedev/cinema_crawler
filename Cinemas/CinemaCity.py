@@ -16,7 +16,6 @@ class CinemaCity(Cinema):
         self.name = 'Cinema City'
         self.params = {'cat': 'now', 'page': 1, 'TheaterId': 0, 'catId': 0}
         self.theatres = {}
-        self.progress = 0
         self.total_progress = 0
 
 
@@ -95,7 +94,7 @@ class CinemaCity(Cinema):
     def get_theatre_screenings(self, theatres, movies=None):
         """Gets all movie screenings from theatres list.
         Returns dictionary which values are a list of dictionaries as such:
-        {theatre1:[movieid1: screenings, movieid2: screenings...], theatre2:[movieid3: screenings]}"""
+        {theatre1:{movieid1: screenings, movieid2: screenings...}, theatre2:{movieid3: screenings}}"""
         today_date = datetime.datetime.now().strftime('%d/%m/%Y')
         timetables = dict()
         self.total_progress = len(movies)

@@ -1,5 +1,6 @@
 import re
 import bs4
+import requests
 from lxml import etree
 
 
@@ -12,8 +13,10 @@ class Parser:
         self.response = None
 
     def set(self, response):
-        self.response = response
-        self.soup = bs4.BeautifulSoup(self.response.text, "html.parser")
+        if isinstance(response, requests.Response):
+            self.response = response
+            response = response.text
+        self.soup = bs4.BeautifulSoup(response, "html.parser")
         self.dom = etree.HTML(str(self.soup))
 
     def get_xpath(self, xpath):

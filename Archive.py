@@ -1,9 +1,11 @@
 import json
 import threading
+
+from Cinemas.LevCinema import LevCinema
 from Cinemas.YesPlanet import YesPlanet
 from Cinemas.CinemaCity import CinemaCity
 from Cinemas.HotCinema import HotCinema
-from Functions import capitalize_sentence, IMAGE_NOT_FOUND, suffixify
+from Functions import capitalize_sentence, IMAGE_NOT_FOUND, suffixify, compare_movie_names
 from Movie import Movie
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
@@ -18,7 +20,8 @@ class Archive:
         self.cinemas = []
         movies_dict = {'YesPlanet': YesPlanet(),
                        'CinemaCity': CinemaCity(),
-                       'HotCinema': HotCinema()}
+                       'HotCinema': HotCinema(),
+                       'LevCinema': LevCinema()}
         for key in movies_dict.keys():
             if key in checklist:
                 self.cinemas.append(movies_dict[key])
@@ -33,12 +36,27 @@ class Archive:
             # Create a dictionary to store suffixes and their corresponding movies
             suffix_dict = {}
 
+
             # Iterate over the movie list
             for movie in movie_list:
+
+                second_suffix = None
+                skip_boolean = False
+                for suffix in suffix_dict:
+                    if compare_movie_names(movie.suffix, suffix):
+                        skip_boolean = True
+                        second_suffix = suffix_dict[suffix]
+
                 # Check if the suffix already exists in the dictionary
-                if movie.suffix in suffix_dict:
+                if movie.suffix in suffix_dict or skip_boolean:
                     # Get the existing movie with the same suffix
-                    existing_movie = suffix_dict[movie.suffix]
+                    if movie.suffix in suffix_dict:
+                        key = movie
+                    else:
+                        key = second_suffix
+                    existing_movie = suffix_dict[key.suffix]
+                    existing_movie.origin.update(key.origin)
+                    existing_movie.screenings.update(key.screenings)
 
                     # Fuse the origin and screenings attributes
                     existing_movie.origin.update(movie.origin)

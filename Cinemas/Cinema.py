@@ -9,6 +9,8 @@ class Cinema(Request):
     def __init__(self):
         super().__init__()
         self.name = ''
+        self.progress = 0
+        self.total_progress = 0
 
     def get_movies(self):
         """Returns a list of dictionaries with movie attributes."""
