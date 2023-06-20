@@ -19,6 +19,8 @@ def regexify(regex, data):
 
 
 def is_english(text):
+    if not text:
+        return False
     return bool(re.match('^[a-zA-Z0-9\s!@#$%^&*(),.?":{}|<>_-]*$', text))
 
 
