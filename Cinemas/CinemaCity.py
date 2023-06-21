@@ -4,7 +4,7 @@ from collections import defaultdict
 
 import bs4
 from Cinemas.Cinema import Cinema
-from Functions import is_english, regexify, find_nearest_addresses, IMAGE_NOT_FOUND, suffixify, capitalize_sentence
+from Functions import is_english, regexify, IMAGE_NOT_FOUND, suffixify, capitalize_sentence
 from Movie import Movie
 from lxml import etree
 
@@ -14,9 +14,11 @@ class CinemaCity(Cinema):
         super().__init__()
         self.home_url = 'https://www.cinema-city.co.il/'
         self.api_url = 'https://tickets.cinema-city.co.il/api/presentations'
+        self.seat_url = 'https://tickets.cinema-city.co.il/api/seats/seatplan?venueId=73&seatplanId=1'
         self.name = 'Cinema City'
         self.theatres = {}
         self.total_progress = 0
+
 
     def get_amount_of_movies(self):
         response = self.get('{api_url}?VenueTypeId=1&Date=0'.format(api_url=self.api_url))

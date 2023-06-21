@@ -180,19 +180,24 @@ class GUI:
                 l.append(ft.Row([self.search_button, self.screening_enable_button,
                                     ft.Text("Get screenings?", style="titleSmall")]))
 
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9hos', value=False, tooltip="Yes Planet"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z94DD', value=False, tooltip="Cinema City"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z95yc', value=False, tooltip="Hot Cinema"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='ZUnwJ', value=False, tooltip="Lev Cinema"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9Njn', value=False, tooltip="IMDB"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9VmY', value=False, tooltip="Metacritic"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Z9WEq', value=False, tooltip="RottenTomatoes"))
+                # /a/iFqoZcg
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:fRW7ZRr', value=False, tooltip="Yes Planet"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:dHSZEvt', value=False, tooltip="Cinema City"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:eMeib2P', value=False, tooltip="Hot Cinema"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:PZhmbnM', value=False, tooltip="Lev Cinema"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:6C7nVMS', value=False, tooltip="IMDB"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:Agep5Se', value=False, tooltip="Metacritic"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:AGJ7mEy', value=False, tooltip="RottenTomatoes"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:M63ZHXb', value=False, tooltip="TheMovieDB"))
 
-                avatars = [ft.CircleAvatar(radius=27, tooltip=button.tooltip, foreground_image_url='https://imgtr.ee/images/2023/06/19/{id}.png'
-                                           .format(id=button.data))  for button in self.buttons]
-                columns = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars))])
+
+                avatars = [ft.CircleAvatar(radius=30, tooltip=button.tooltip, foreground_image_url='https://imgur.com/{id}.png'
+                                           .format(id=button.data.split(':')[1]))  for button in self.buttons]
+                cinemas = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Cinema'])
+                reviewers = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Reviewer'])
                 page.add(ft.Container(content=ft.Column([ft.Row(l),
-                                                         columns
+                                                         cinemas,
+                                                         reviewers
                                                          ])))
 
             def copy_clipboard(e):
@@ -307,6 +312,7 @@ class GUI:
             add_json()
 
         ft.app(target=main)
+        # ft.app(target=main, view=ft.WEB_BROWSER)
 
 
 def read_json():

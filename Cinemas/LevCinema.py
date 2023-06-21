@@ -16,7 +16,7 @@ class LevCinema(Cinema):
         super().__init__()
         self.home_url = 'https://www.lev.co.il/'
         self.url = '{home_url}en/movies/'.format(home_url=self.home_url)
-        self.api_url = 'https://ticket.lev.co.il/api/presentations?includeSynopsis=0'
+        self.api_url = 'https://ticket.lev.co.il/api/presentations'
         self.name = 'Lev Cinema'
 
     def get_movies(self):
@@ -55,5 +55,4 @@ class LevCinema(Cinema):
         """Gets all movie screenings from theatres list.
         Returns dictionary which values are a list of dictionaries as such:
         {theatre1:{movieid1: screenings, movieid2: screenings...}, theatre2:{movieid3: screenings}}"""
-
         return CinemaCity.get_theatre_screenings(self, theatres, movies)

@@ -18,10 +18,11 @@ def regexify(regex, data):
         return
 
 
-def is_english(text):
-    if not text.strip():
+def is_english(s):
+    """Checks if 's' is in English."""
+    if not s.strip():
         return False
-    return bool(re.match('^[a-zA-Z0-9\s!@#$%^&*(),.?":{}|<>_-]*$', text))
+    return bool(regexify('^[a-zA-Z0-9\s!@#$%^&*(),.?":{}|<>_-]*$', s))
 
 
 def estimate_time(start_time, current_item, total_items):

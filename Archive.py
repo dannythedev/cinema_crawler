@@ -10,6 +10,7 @@ from Movie import Movie
 from Reviewers.IMDB import IMDB
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
+from Reviewers.TheMovieDB import TheMovieDB
 
 EXPORT_FILE = 'movies.json'
 
@@ -82,7 +83,8 @@ class Archive:
         self.reviewers = []
         reviewers_dict = {'Metacritic': Metacritic(),
                           'RottenTomatoes': RottenTomatoes(),
-                          'IMDB': IMDB()}
+                          'IMDB': IMDB(),
+                          'TheMovieDB': TheMovieDB()}
         for key in reviewers_dict.keys():
             if key in self.checklist:
                 self.reviewers.append(reviewers_dict[key])
