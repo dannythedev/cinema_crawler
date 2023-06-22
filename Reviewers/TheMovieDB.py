@@ -11,27 +11,35 @@ class TheMovieDB(Reviewer):
         self.headers = {'User-Agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 ('
                                      'KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36'}
         self.validate_year_first = True
+        self.xpaths.update({'image': ["//div[@class='image_content backdrop']//@data-src"],
+                            'duration': ["//p[@class='info']/text()"],
+                            'genre': ["//p[@class='info']/text()"],
+                            'year': ["//p[@class='info']/text()"],
+                            'rating': ["//div[@class='percent']//@class"],
+                            'movies': ["//div[@class='details']"],
+                            'title': ["//h2/text()"],
+                            'id': ["//@href"]})
 
     @exception_method
     def get_image(self, movie):
         if movie.image == IMAGE_NOT_FOUND:
-            movie.image = self.home_url[:-1]+str(self.html.get_xpath_elements("//div[@class='image_content backdrop']//@data-src")[0])
+            movie.image = self.home_url[:-1]+self.html.get_xpath_element_by_index(self.xpaths['image'])
 
     @exception_method
     def get_duration(self, movie):
         if not movie.duration:
-            movie.duration = str(self.html.get_xpath_elements("//span[@class='runtime']/text()")[0]).strip()
+            movie.duration = self.html.get_xpath_element_by_index(self.xpaths['duration'])
 
     @exception_method
     def get_genre(self, movie):
         if not movie.genre:
-            movie.genre = str(', '.join(self.html.get_xpath_elements("//span[@class='genres']//a/text()"))).strip()
+            movie.genre = ', '.join(self.html.get_xpath_element_by_index(self.xpaths['genre']))
 
     @exception_method
     def get_trailer(self, movie):
         if not movie.trailer:
             movie.trailer = 'https://www.youtube.com/watch?v={id}'\
-                .format(id=self.html.get_xpath_element_by_index("//div[@class='video card no_border']//a[@class='no_click play_trailer']/@data-id"))
+                .format(id=self.html.get_xpath_element_by_index(self.xpaths['trailer']))
 
     @exception_method
     def get_year(self, movie):
@@ -41,14 +49,14 @@ class TheMovieDB(Reviewer):
 
     def get_attributes(self, movie, url=''):
         response = self.get(self.search_url + movie.title)
-        movies = self.html.get_xpath_elements("//div[@class='details']")
+        movies = self.html.get_xpath_elements(self.xpaths['movies'])
         movies = [etree.tostring(x, pretty_print=True) for x in movies]
         for results in movies:
             self.html.set(results)
-            if suffixify(movie.title) == suffixify(self.html.get_xpath_element_by_index("//h2/text()")):
-                validation = super().get_attributes(movie, url=self.home_url[:-1] + self.html.get_xpath_element_by_index("//@href"))
+            if suffixify(movie.title) == suffixify(self.html.get_xpath_element_by_index(self.xpaths['title'])):
+                validation = super().get_attributes(movie, url=self.home_url[:-1] + self.html.get_xpath_element_by_index(self.xpaths['id']))
                 if validation:
                     continue
-                rating = regexify(r'\d+', self.html.get_xpath_element_by_index("//div[@class='percent']//@class", 1))
+                rating = regexify(r'\d+', self.html.get_xpath_element_by_index(self.xpaths['rating'], 1))
                 movie.rating.update({'TheMovieDB Score': int(float(rating))})
                 break

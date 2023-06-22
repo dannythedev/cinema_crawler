@@ -1,6 +1,6 @@
 import datetime
 
-from Functions import exception_method
+from Functions import exception_method, IMAGE_NOT_FOUND
 from Request import Request
 
 class Reviewer(Request):
@@ -17,12 +17,16 @@ class Reviewer(Request):
     @exception_method
     def get_genre(self, movie):
         """Attaches genre string from self.html xpath to movie."""
-        pass
+        if not movie.genre:
+            movie.genre = ', '.join(self.html.get_xpath_elements(self.xpaths['genre']))
 
     @exception_method
     def get_image(self, movie):
         """Attaches image URL from self.html xpath to movie."""
-        pass
+        if movie.image == IMAGE_NOT_FOUND:
+            xpath = self.html.get_xpath_element_by_index(self.xpaths['image'])
+            if 'poster-default' not in xpath:
+                movie.image = xpath
 
     @exception_method
     def get_trailer(self, movie):

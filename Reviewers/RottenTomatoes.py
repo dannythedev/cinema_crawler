@@ -6,28 +6,25 @@ class RottenTomatoes(Reviewer):
     def __init__(self):
         super().__init__()
         self.home_url = 'https://www.rottentomatoes.com/m/'
-
-    @exception_method
-    def get_image(self, movie):
-        if movie.image == IMAGE_NOT_FOUND:
-            xpath = self.html.get_xpath_element_by_index("//tile-dynamic[@class='thumbnail']//@src")
-            if 'poster-default' not in xpath:
-                movie.image = xpath
+        self.xpaths.update({'image': ["//tile-dynamic[@class='thumbnail']//@src"],
+                            'duration': ["//p[@class='info']/text()"],
+                            'genre': ["//p[@class='info']/text()"],
+                            'year': ["//p[@class='info']/text()"]})
 
     @exception_method
     def get_duration(self, movie):
         if not movie.duration:
-            movie.duration = self.html.get_xpath_element_by_index("//p[@class='info']/text()").split(', ')[2]
+            movie.duration = self.html.get_xpath_element_by_index(self.xpaths['duration']).split(', ')[2]
 
     @exception_method
     def get_genre(self, movie):
         if not movie.genre:
-            movie.genre = self.html.get_xpath_element_by_index("//p[@class='info']/text()").split(', ')[1]
+            movie.genre = self.html.get_xpath_element_by_index(self.xpaths['genre']).split(', ')[1]
 
     @exception_method
     def get_year(self, movie):
         if not movie.year:
-            movie.year = self.html.get_xpath_element_by_index("//p[@class='info']/text()").split(', ')[0]
+            movie.year = self.html.get_xpath_element_by_index(self.xpaths['year']).split(', ')[0]
 
     def get_attributes(self, movie, url=''):
         validation = super().get_attributes(movie=movie, url=self.home_url + movie.suffix.replace('-', '_'))

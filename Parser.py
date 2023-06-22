@@ -29,14 +29,22 @@ class Parser:
                 return str(elements).strip()
         return elements
 
-    def get_xpath_elements(self, xpath):
-        return self.stringify(xpath, self.dom.xpath(xpath))
+    def get_xpath_elements(self, xpaths):
+        for xpath in xpaths:
+            elements = self.stringify(xpath, self.dom.xpath(xpath))
+            if elements:
+                return elements
+        return
 
-    def get_xpath_element_by_index(self, xpath, index=0):
-        try:
-            return self.stringify(xpath, self.dom.xpath(xpath)[index])
-        except IndexError:
-            return
+    def get_xpath_element_by_index(self, xpaths, index=0):
+        for xpath in xpaths:
+            try:
+                element = self.stringify(xpath, self.dom.xpath(xpath)[index])
+                if element:
+                    return element
+            except IndexError:
+                pass
+        return
 
     def find(self, string):
         return self.soup.find(string)

@@ -18,20 +18,26 @@ class LevCinema(Cinema):
         self.url = '{home_url}en/movies/'.format(home_url=self.home_url)
         self.api_url = 'https://ticket.lev.co.il/api/presentations'
         self.name = 'Lev Cinema'
+        self.xpaths.update({'image': ["//img/@src"],
+                            'url': ["//a/@href"],
+                            'title': ["//div[@class='movieInfo']/div[@class='movieName']/text()"],
+                            'display_name': ["//div[@id='moviefilter']//option/text()"],
+                            'id': ["//div[@id='moviefilter']//option/@value"],
+                            'movies': ["//div[@class='item']"]})
 
     def get_movies(self):
         response = self.get(self.url)
-        movies = self.html.get_xpath_elements("//div[@class='item']")
+        movies = self.html.get_xpath_elements(self.xpaths['movies'])
         movies = [etree.tostring(x, pretty_print=True) for x in movies]
-        movie_ids = dict(zip(self.html.get_xpath_elements("//div[@id='moviefilter']//option/text()"),
-                             self.html.get_xpath_elements("//div[@id='moviefilter']//option/@value")))
+        movie_ids = dict(zip(self.html.get_xpath_elements(self.xpaths['display_name']),
+                             self.html.get_xpath_elements(self.xpaths['id'])))
         movies_list = []
         for movie in movies:
             self.html.set(str(movie))
-            title = self.html.get_xpath_element_by_index("//div[@class='movieInfo']/div[@class='movieName']/text()").replace('\\n','').strip()
-            url = self.html.get_xpath_element_by_index("//a/@href")
-            image = self.html.get_xpath_element_by_index("//img/@src", 1) if is_image_url(
-                self.html.get_xpath_element_by_index("//img/@src", 1)) else IMAGE_NOT_FOUND
+            title = self.html.get_xpath_element_by_index(self.xpaths['title']).replace('\\n','').strip()
+            url = self.html.get_xpath_element_by_index(self.xpaths['url'])
+            image_xpath = self.html.get_xpath_element_by_index(self.xpaths['image'], 1)
+            image = image_xpath if is_image_url(image_xpath) else IMAGE_NOT_FOUND
             try:
                 id = movie_ids[title.replace('–', '-')]
             except KeyError:

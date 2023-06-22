@@ -15,6 +15,10 @@ class HotCinema(Cinema):
         self.name = 'Hot Cinema'
         self.total_progress = 0
         self.progress = 0
+        self.xpaths.update({'maps_url': ["//div[@class='text-wrapper']/a/@href"],
+                            'trailer': ["//div[@class='ytp-title-text']/a/@href"],
+                            'url': ["//div[@class='modal-body']/ul/li/a/@href"],
+                            'title': ["//div[@class='modal-body']/ul/li/a/text()"]})
 
     def get_movies(self):
         response = self.get(self.home_url)
@@ -26,7 +30,7 @@ class HotCinema(Cinema):
                 movies_list.append(Movie(title=title.replace('-', ' ').lower(),
                                          suffix=suffixify(title),
                                          image=IMAGE_NOT_FOUND,
-                                         trailer=self.html.get_xpath_element_by_index("//div[@class='ytp-title-text']/a/@href"),
+                                         trailer=self.html.get_xpath_element_by_index(self.xpaths['trailer']),
                                          genre=[],
                                          origin={'Hot Cinema': x['ID']}))
         return movies_list
@@ -38,16 +42,16 @@ class HotCinema(Cinema):
         [{id:'', latitude:'', longitude:'', displayName:'', url:''}]"""
 
         response = self.get(self.home_url)
-        urls = self.html.get_xpath_elements("//div[@class='modal-body']/ul/li/a/@href")
+        urls = self.html.get_xpath_elements(self.xpaths['url'])
         urls = [url[1:] for url in urls]
-        display_names = self.html.get_xpath_elements("//div[@class='modal-body']/ul/li/a/text()")
+        display_names = self.html.get_xpath_elements(self.xpaths['title'])
         theatres = []
         for x in range(len(display_names)):
             theatres.append({'displayName': display_names[x], 'url': self.home_url+urls[x]})
         # Nearest theatres will be done in next function.
         for theatre in theatres:
             response = self.get(theatre['url'])
-            maps_url = self.html.get_xpath_element_by_index("//div[@class='text-wrapper']/a/@href", 1)
+            maps_url = self.html.get_xpath_element_by_index(self.xpaths['maps_url'], 1)
             theatre['latitude'], theatre['longitude'] = regexify(r'@([^,]+),([^,]+)', maps_url)
             theatre['latitude'], theatre['longitude'] = float(theatre['latitude']), float(theatre['longitude'])
             theatre['id'] = regexify(r'(?<=/)\d+', theatre['url'])
