@@ -8,6 +8,7 @@ import requests
 
 IMAGE_NOT_FOUND = 'https://www.prokerala.com/movies/assets/img/no-poster-available.webp'
 LOADING_REFERSH_TIME = 0.75
+REGEX_YEAR = r'\d{4}'
 
 
 def regexify(regex, data):
