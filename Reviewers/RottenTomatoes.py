@@ -10,24 +10,24 @@ class RottenTomatoes(Reviewer):
     @exception_method
     def get_image(self, movie):
         if movie.image == IMAGE_NOT_FOUND:
-            xpath = str(self.html.get_xpath("//tile-dynamic[@class='thumbnail']//@src")[0])
+            xpath = self.html.get_xpath_element_by_index("//tile-dynamic[@class='thumbnail']//@src")
             if 'poster-default' not in xpath:
                 movie.image = xpath
 
     @exception_method
     def get_duration(self, movie):
         if not movie.duration:
-            movie.duration = str(self.html.get_xpath("//p[@class='info']/text()")[0].split(', ')[2])
+            movie.duration = self.html.get_xpath_element_by_index("//p[@class='info']/text()").split(', ')[2]
 
     @exception_method
     def get_genre(self, movie):
         if not movie.genre:
-            movie.genre = str(self.html.get_xpath("//p[@class='info']/text()")[0].split(', ')[1])
+            movie.genre = self.html.get_xpath_element_by_index("//p[@class='info']/text()").split(', ')[1]
 
     @exception_method
     def get_year(self, movie):
         if not movie.year:
-            movie.year = str(self.html.get_xpath("//p[@class='info']/text()")[0].split(', ')[0])
+            movie.year = self.html.get_xpath_element_by_index("//p[@class='info']/text()").split(', ')[0]
 
     def get_attributes(self, movie, url=''):
         validation = super().get_attributes(movie=movie, url=self.home_url + movie.suffix.replace('-', '_'))

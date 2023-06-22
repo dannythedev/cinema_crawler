@@ -18,30 +18,30 @@ class IMDB(Reviewer):
     @exception_method
     def get_image(self, movie):
         if movie.image == IMAGE_NOT_FOUND:
-            xpath = str(self.html.get_xpath("//div[@class='sc-61c73608-1 jLwVZW']//@src")[0])
+            xpath = self.html.get_xpath_element_by_index("//div[@class='sc-61c73608-1 jLwVZW']//@src")
             if 'poster-default' not in xpath:
                 movie.image = xpath
 
     @exception_method
     def get_duration(self, movie):
         if not movie.duration:
-            movie.duration = str(self.html.get_xpath("//li[@class='ipc-inline-list__item']/text()")[0])
+            movie.duration = self.html.get_xpath_element_by_index("//li[@class='ipc-inline-list__item']/text()")
 
     @exception_method
     def get_genre(self, movie):
         if not movie.genre:
-            movie.genre = str(', '.join(self.html.get_xpath("//div[@class='ipc-chip-list__scroller']/a//text()")))
+            movie.genre = ', '.join(self.html.get_xpath_elements("//div[@class='ipc-chip-list__scroller']/a//text()"))
 
     @exception_method
     def get_trailer(self, movie):
         if not movie.trailer:
             movie.trailer = self.home_url+\
-                            str(self.html.get_xpath("//section[@data-testid='videos-section']//div[@role='group']//@href")[0])
+                            self.html.get_xpath_element_by_index("//section[@data-testid='videos-section']//div[@role='group']//@href")
 
     @exception_method
     def get_year(self, movie):
         if not movie.year:
-            movie.year = str(self.html.get_xpath("//section/div[2]/div[1]/ul/li[1]/a/text()")[0])
+            movie.year = self.html.get_xpath_element_by_index("//section/div[2]/div[1]/ul/li[1]/a/text()")
 
     def get_attributes(self, movie, url=''):
         response = self.get(self.search_api_url.format(query=suffixify(movie.title)))
@@ -54,6 +54,6 @@ class IMDB(Reviewer):
                 if validation:
                     continue
 
-            rating = self.html.get_xpath("//span[@class='sc-bde20123-1 iZlgcd']/text()")[0]
+            rating = self.html.get_xpath_element_by_index("//span[@class='sc-bde20123-1 iZlgcd']/text()")
             movie.rating.update({'IMDB Score': int(float(rating) * 10)})
             return

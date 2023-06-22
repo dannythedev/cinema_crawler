@@ -21,18 +21,17 @@ class LevCinema(Cinema):
 
     def get_movies(self):
         response = self.get(self.url)
-        movies = self.html.get_xpath("//div[@class='item']")
+        movies = self.html.get_xpath_elements("//div[@class='item']")
         movies = [etree.tostring(x, pretty_print=True) for x in movies]
-        movie_ids = dict(zip(self.html.get_xpath("//div[@id='moviefilter']//option/text()"),
-                             self.html.get_xpath("//div[@id='moviefilter']//option/@value")))
+        movie_ids = dict(zip(self.html.get_xpath_elements("//div[@id='moviefilter']//option/text()"),
+                             self.html.get_xpath_elements("//div[@id='moviefilter']//option/@value")))
         movies_list = []
         for movie in movies:
             self.html.set(str(movie))
-            title = self.html.get_xpath("//div[@class='movieInfo']/div[@class='movieName']/text()")[0].replace('\\n',
-                                                                                                               '').strip()
-            url = self.html.get_xpath("//a/@href")[0]
-            image = self.html.get_xpath("//img/@src")[1] if is_image_url(
-                self.html.get_xpath("//img/@src")[1]) else IMAGE_NOT_FOUND
+            title = self.html.get_xpath_element_by_index("//div[@class='movieInfo']/div[@class='movieName']/text()").replace('\\n','').strip()
+            url = self.html.get_xpath_element_by_index("//a/@href")
+            image = self.html.get_xpath_element_by_index("//img/@src", 1) if is_image_url(
+                self.html.get_xpath_element_by_index("//img/@src", 1)) else IMAGE_NOT_FOUND
             try:
                 id = movie_ids[title.replace('–', '-')]
             except KeyError:

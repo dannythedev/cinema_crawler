@@ -24,11 +24,11 @@ class HotCinema(Cinema):
             title = regexify(regex='/movie/\d*/(.*)', data=x['PageUrl'])
             if is_english(title):
                 movies_list.append(Movie(title=title.replace('-', ' ').lower(),
-                          suffix=suffixify(title),
-                          image=IMAGE_NOT_FOUND,
-                          trailer=self.html.get_xpath("//div[@class='ytp-title-text']/a/@href"),
-                          genre=[],
-                          origin={'Hot Cinema': x['ID']}))
+                                         suffix=suffixify(title),
+                                         image=IMAGE_NOT_FOUND,
+                                         trailer=self.html.get_xpath_element_by_index("//div[@class='ytp-title-text']/a/@href"),
+                                         genre=[],
+                                         origin={'Hot Cinema': x['ID']}))
         return movies_list
 
     def get_nearest_theatres(self):
@@ -38,16 +38,16 @@ class HotCinema(Cinema):
         [{id:'', latitude:'', longitude:'', displayName:'', url:''}]"""
 
         response = self.get(self.home_url)
-        urls = self.html.get_xpath("//div[@class='modal-body']/ul/li/a/@href")
-        urls = [str(url)[1:] for url in urls]
-        display_names = self.html.get_xpath("//div[@class='modal-body']/ul/li/a/text()")
+        urls = self.html.get_xpath_elements("//div[@class='modal-body']/ul/li/a/@href")
+        urls = [url[1:] for url in urls]
+        display_names = self.html.get_xpath_elements("//div[@class='modal-body']/ul/li/a/text()")
         theatres = []
         for x in range(len(display_names)):
-            theatres.append({'displayName': display_names[x].strip("\n ").strip(), 'url': self.home_url+urls[x]})
+            theatres.append({'displayName': display_names[x], 'url': self.home_url+urls[x]})
         # Nearest theatres will be done in next function.
         for theatre in theatres:
             response = self.get(theatre['url'])
-            maps_url = str(self.html.get_xpath("//div[@class='text-wrapper']/a/@href")[1])
+            maps_url = self.html.get_xpath_element_by_index("//div[@class='text-wrapper']/a/@href", 1)
             theatre['latitude'], theatre['longitude'] = regexify(r'@([^,]+),([^,]+)', maps_url)
             theatre['latitude'], theatre['longitude'] = float(theatre['latitude']), float(theatre['longitude'])
             theatre['id'] = regexify(r'(?<=/)\d+', theatre['url'])
