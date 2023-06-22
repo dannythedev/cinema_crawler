@@ -5,7 +5,7 @@ from Reviewers.Reviewer import Reviewer
 class RottenTomatoes(Reviewer):
     def __init__(self):
         super().__init__()
-        self.url = 'https://www.rottentomatoes.com/m/'
+        self.home_url = 'https://www.rottentomatoes.com/m/'
 
     @exception_method
     def get_image(self, movie):
@@ -30,7 +30,7 @@ class RottenTomatoes(Reviewer):
             movie.year = str(self.html.get_xpath("//p[@class='info']/text()")[0].split(', ')[0])
 
     def get_attributes(self, movie, url=''):
-        validation = super().get_attributes(movie=movie, url=self.url + movie.suffix.replace('-', '_'))
+        validation = super().get_attributes(movie=movie, url=self.home_url + movie.suffix.replace('-', '_'))
         if validation:
             return
         board = self.html.find("score-board")  # Rating

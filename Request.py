@@ -5,7 +5,7 @@ class Request:
     def __init__(self):
         self.rating = []
         self.html = Parser()
-        self.url = NotImplemented
+        self.home_url = NotImplemented
         self.headers = {}
         self.params = {}
         self.request_counter = 0

@@ -1,5 +1,4 @@
 from lxml import etree
-
 from Functions import exception_method, IMAGE_NOT_FOUND, suffixify, regexify, REGEX_YEAR
 from Reviewers.Reviewer import Reviewer
 
@@ -41,9 +40,7 @@ class TheMovieDB(Reviewer):
 
 
     def get_attributes(self, movie, url=''):
-        """Searches for movie in IMDB. Then gets rating."""
         response = self.get(self.search_url + movie.title)
-
         movies = self.html.get_xpath("//div[@class='details']")
         movies = [etree.tostring(x, pretty_print=True) for x in movies]
         for results in movies:

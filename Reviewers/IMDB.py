@@ -44,8 +44,6 @@ class IMDB(Reviewer):
             movie.year = str(self.html.get_xpath("//section/div[2]/div[1]/ul/li[1]/a/text()")[0])
 
     def get_attributes(self, movie, url=''):
-        """Searches for movie in IMDB. Then gets rating."""
-
         response = self.get(self.search_api_url.format(query=suffixify(movie.title)))
         response = json.loads(response.text)['d']
         for query in response:
