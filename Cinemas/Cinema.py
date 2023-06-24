@@ -11,10 +11,16 @@ class Cinema(Request):
         self.name = ''
         self.progress = 0
         self.total_progress = 0
+        self.movies = []
 
     def get_movies(self):
         """Returns a list of dictionaries with movie attributes."""
-        pass
+        return
+
+    def initialize(self, is_screening):
+        self.movies = self.get_movies()
+        if is_screening:
+            self.set_movie_screenings(self.movies)
 
     def set_movie_screenings(self, movies):
         theatres = self.get_nearest_theatres()

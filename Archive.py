@@ -71,11 +71,14 @@ class Archive:
             return list(suffix_dict.values())
 
         if not self.custom_search:
-            for cinema in self.cinemas:
-                exported_movies = cinema.get_movies()
-                self.movies += exported_movies
-                if self.is_screenings:
-                    cinema.set_movie_screenings(exported_movies)
+            threads = []
+            for x in range(len(self.cinemas)):
+                thread = threading.Thread(target=self.cinemas[x].initialize, args=[self.is_screenings])
+                thread.start()
+                threads.append(thread)
+            for x in range(len(threads)):
+                threads[x].join()
+                self.movies += self.cinemas[x].movies
             self.movies = update_movies(self.movies)
         else:
             self.movies = [Movie(title=self.custom_search, suffix=suffixify(self.custom_search), image=IMAGE_NOT_FOUND, trailer='', genre=None, origin=None)]

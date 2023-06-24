@@ -14,7 +14,7 @@ class TheMovieDB(Reviewer):
         self.xpaths.update({'image': ["//div[@class='image_content backdrop']//@data-src"],
                             'duration': ["//p[@class='info']/text()"],
                             'genre': ["//p[@class='info']/text()"],
-                            'year': ["//p[@class='info']/text()"],
+                            'year': ["//div[@class='title']/span[@class='release_date']/text()"],
                             'rating': ["//div[@class='percent']//@class"],
                             'movies': ["//div[@class='details']"],
                             'title': ["//h2/text()"],
@@ -44,7 +44,7 @@ class TheMovieDB(Reviewer):
     @exception_method
     def get_year(self, movie):
         if not movie.year:
-            movie.year = regexify(REGEX_YEAR, self.html.get_xpath_element_by_index("//div[@class='title']/span[@class='release_date']/text()"))
+            movie.year = regexify(REGEX_YEAR, self.html.get_xpath_element_by_index(self.xpaths['year']))
 
 
     def get_attributes(self, movie, url=''):

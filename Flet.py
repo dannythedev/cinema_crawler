@@ -191,7 +191,7 @@ class GUI:
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:M63ZHXb', value=False, tooltip="TheMovieDB"))
 
 
-                avatars = [ft.CircleAvatar(radius=30, tooltip=button.tooltip, foreground_image_url='https://imgur.com/{id}.png'
+                avatars = [ft.CircleAvatar(radius=50, tooltip=button.tooltip, foreground_image_url='https://imgur.com/{id}.png'
                                            .format(id=button.data.split(':')[1]))  for button in self.buttons]
                 cinemas = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Cinema'])
                 reviewers = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Reviewer'])
@@ -199,6 +199,7 @@ class GUI:
                                                          cinemas,
                                                          reviewers
                                                          ])))
+                page.update()
 
             def copy_clipboard(e):
                 data = e.control.data
