@@ -80,8 +80,9 @@ class Archive:
                 threads[x].join()
                 self.movies += self.cinemas[x].movies
             self.movies = update_movies(self.movies)
+            print('Requests:\n',([(cinema.name, cinema.request_counter) for cinema in self.cinemas]))
         else:
-            self.movies = [Movie(title=self.custom_search, suffix=suffixify(self.custom_search), image=IMAGE_NOT_FOUND, trailer='', genre=None, origin=None)]
+            self.movies = [Movie(title=self.custom_search, suffix=suffixify(self.custom_search), image=IMAGE_NOT_FOUND)]
 
         self.reviewers = []
         reviewers_dict = {'Metacritic': Metacritic(),
@@ -108,6 +109,7 @@ class Archive:
             threads.append(thread)
         for thread in threads:
             thread.join()
+        print('Requests:\n',[(reviewer.name, reviewer.request_counter) for reviewer in self.reviewers])
         # for reviewer in self.reviewers:
         #     reviewer.initialize(self.movies)
 

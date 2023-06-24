@@ -10,6 +10,7 @@ class RottenTomatoes(Reviewer):
                             'duration': ["//p[@class='info']/text()"],
                             'genre': ["//p[@class='info']/text()"],
                             'year': ["//p[@class='info']/text()"]})
+        self.name = 'Rotten Tomatoes'
 
     @exception_method
     def get_duration(self, movie):

@@ -19,6 +19,7 @@ class TheMovieDB(Reviewer):
                             'movies': ["//div[@class='details']"],
                             'title': ["//h2/text()"],
                             'id': ["//@href"]})
+        self.name = 'TheMovieDB'
 
     @exception_method
     def get_image(self, movie):

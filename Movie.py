@@ -1,5 +1,5 @@
 class Movie:
-    def __init__(self, title, suffix, image, trailer, genre, origin, year=None, url=None):
+    def __init__(self, title, suffix, image, trailer='', genre='', origin=None, year=None, url=None):
         self.title = title
         self.total_rating = 0
         self.image = image

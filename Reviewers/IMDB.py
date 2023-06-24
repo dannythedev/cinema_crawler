@@ -20,6 +20,7 @@ class IMDB(Reviewer):
                             'trailer': ["//section[@data-testid='videos-section']//div[@role='group']//@href"],
                             'year': ["//section/div[2]/div[1]/ul/li[1]/a/text()"],
                             'rating': ["//span[@class='sc-bde20123-1 iZlgcd']/text()"]})
+        self.name = 'IMDB'
 
     @exception_method
     def get_duration(self, movie):

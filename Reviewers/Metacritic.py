@@ -14,6 +14,7 @@ class Metacritic(Reviewer):
                             'audience_rating': ["//span[contains(@class, 'metascore_w user')]/text()"],
                             'critic_rating': ["//span[contains(@class, 'metascore_w larger movie')]/text()"],
                             'trailer': ["//div[@id='videoContainer_wrapper']/@data-mcvideourl"]})
+        self.name = 'Metacritic'
 
     @exception_method
     def get_trailer(self, movie):
