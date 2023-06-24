@@ -15,7 +15,7 @@ class Cinema(Request):
 
     def get_movies(self):
         """Returns a list of dictionaries with movie attributes."""
-        return
+        return []
 
     def initialize(self, is_screening):
         self.movies = self.get_movies()

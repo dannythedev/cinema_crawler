@@ -31,7 +31,7 @@ class GUI:
 
             def loading_bar_initial():
                 self.start_time = time.time()
-                self.loading_bar_cinemas.append(ft.ProgressBar(width=400))
+                self.loading_bar_cinemas.append(ft.ProgressBar(width=400, color="blue"))
                 self.loading_bar_cinemas.append(ft.Text("Retrieving movies", style="headlineSmall", color="blue"))
                 self.loading_bar_cinemas.append(
                     ft.Column([ft.Text("This may take a short while."), self.loading_bar_cinemas[0]]))
@@ -59,7 +59,7 @@ class GUI:
                 # -------------------
 
                 self.start_time = time.time()
-                self.loading_bar_reviewers.append(ft.ProgressBar(width=400))
+                self.loading_bar_reviewers.append(ft.ProgressBar(width=400, color="amber"))
                 self.loading_bar_reviewers.append(ft.Text("Collecting ratings", style="headlineSmall", color="amber"))
                 self.loading_bar_reviewers.append(ft.Column([ft.Text("Just a moment!"), self.loading_bar_reviewers[0]]))
                 page.add(self.loading_bar_reviewers[1], self.loading_bar_reviewers[2],
