@@ -129,9 +129,6 @@ def format_date(date, from_format, to_format):
 def suffixify(s):
     return s.replace(' ', '-').replace(':', '').replace('&', '').replace('.', '').lower()
 
-
-
-
 import re
 
 def filter_hour_format(strings):
@@ -148,6 +145,7 @@ def sort_and_remove_duplicate_hours(hours):
 
 def is_image_url(url):
     image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+    url = regexify(r"(.*?\.jpg|.jpeg|.png|.gif)", url)
     return any(url.lower().endswith(ext) for ext in image_extensions)
 
 
@@ -202,11 +200,12 @@ def compare_movie_names(movie_name1, movie_name2):
 
     # Check for specific variations in the names
     for word, variations in word_variations.items():
-        if any(variation in movie_name1_cleaned for variation in variations+[word]) and \
-                any(variation in movie_name2_cleaned for variation in variations+[word]):
+        variations = variations+[word] # Add the key to the dictionary.
+        if any(variation in movie_name1_cleaned for variation in variations) and \
+                any(variation in movie_name2_cleaned for variation in variations):
             # Extract the word from both names
-            word_extract1 = [var for var in variations+[word] if var in movie_name1_cleaned][0]
-            word_extract2 = [var for var in variations+[word] if var in movie_name2_cleaned][0]
+            word_extract1 = [var for var in variations if var in movie_name1_cleaned][0]
+            word_extract2 = [var for var in variations if var in movie_name2_cleaned][0]
 
             # Remove the word from the cleaned names
             movie_name1_cleaned = movie_name1_cleaned.replace(word_extract1, "")

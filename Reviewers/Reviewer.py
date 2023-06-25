@@ -1,7 +1,8 @@
 import datetime
 
-from Functions import exception_method, IMAGE_NOT_FOUND
+from Functions import exception_method, IMAGE_NOT_FOUND, REGEX_YEAR, regexify
 from Request import Request
+from Functions import is_image_url
 
 class Reviewer(Request):
     def __init__(self):
@@ -25,8 +26,12 @@ class Reviewer(Request):
         """Attaches image URL from self.html xpath to movie."""
         if movie.image == IMAGE_NOT_FOUND:
             xpath = self.html.get_xpath_element_by_index(self.xpaths['image'])
+            if not is_image_url(xpath):
+                return
             if 'poster-default' not in xpath:
                 movie.image = xpath
+            if self.home_url not in xpath and not xpath.startswith('https:'):
+                movie.image = self.home_url[:-1]+xpath
 
     @exception_method
     def get_trailer(self, movie):
@@ -35,8 +40,9 @@ class Reviewer(Request):
 
     @exception_method
     def get_year(self, movie):
-        """Attaches year from self.html xpath to movie."""
-        pass
+        if not movie.year:
+            movie.year = regexify(REGEX_YEAR, self.html.get_xpath_element_by_index(self.xpaths['year']))
+
 
     def validate_by_year(self, movie):
         """Function that rules out movie ratings for movies with same name but different release years.

@@ -33,10 +33,6 @@ class IMDB(Reviewer):
             movie.trailer = self.home_url+\
                             self.html.get_xpath_element_by_index(self.xpaths['trailer'])
 
-    @exception_method
-    def get_year(self, movie):
-        if not movie.year:
-            movie.year = self.html.get_xpath_element_by_index(self.xpaths['year'])
 
     def get_attributes(self, movie, url=''):
         response = self.get(self.search_api_url.format(query=suffixify(movie.title)))
@@ -50,5 +46,5 @@ class IMDB(Reviewer):
                     continue
 
             rating = self.html.get_xpath_element_by_index(self.xpaths['rating'])
-            movie.rating.update({'IMDB Score': int(float(rating) * 10)})
+            movie.rating.update({'IMDB Audience Score': int(float(rating) * 10)})
             return

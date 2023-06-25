@@ -22,11 +22,6 @@ class TheMovieDB(Reviewer):
         self.name = 'TheMovieDB'
 
     @exception_method
-    def get_image(self, movie):
-        if movie.image == IMAGE_NOT_FOUND:
-            movie.image = self.home_url[:-1]+self.html.get_xpath_element_by_index(self.xpaths['image'])
-
-    @exception_method
     def get_duration(self, movie):
         if not movie.duration:
             movie.duration = self.html.get_xpath_element_by_index(self.xpaths['duration'])
@@ -42,11 +37,6 @@ class TheMovieDB(Reviewer):
             movie.trailer = 'https://www.youtube.com/watch?v={id}'\
                 .format(id=self.html.get_xpath_element_by_index(self.xpaths['trailer']))
 
-    @exception_method
-    def get_year(self, movie):
-        if not movie.year:
-            movie.year = regexify(REGEX_YEAR, self.html.get_xpath_element_by_index(self.xpaths['year']))
-
 
     def get_attributes(self, movie, url=''):
         response = self.get(self.search_url + movie.title)
@@ -59,5 +49,5 @@ class TheMovieDB(Reviewer):
                 if validation:
                     continue
                 rating = regexify(r'\d+', self.html.get_xpath_element_by_index(self.xpaths['rating'], 1))
-                movie.rating.update({'TheMovieDB Score': int(float(rating))})
+                movie.rating.update({'TheMovieDB Audience Score': int(float(rating))})
                 break

@@ -8,6 +8,7 @@ from Cinemas.HotCinema import HotCinema
 from Functions import capitalize_sentence, IMAGE_NOT_FOUND, suffixify, compare_movie_names, validate_movie_titles
 from Movie import Movie
 from Reviewers.IMDB import IMDB
+from Reviewers.Letterboxd import Letterboxd
 from Reviewers.Metacritic import Metacritic
 from Reviewers.RottenTomatoes import RottenTomatoes
 from Reviewers.TheMovieDB import TheMovieDB
@@ -101,7 +102,8 @@ class Archive:
         reviewers_dict = {'Metacritic': Metacritic(),
                           'RottenTomatoes': RottenTomatoes(),
                           'IMDB': IMDB(),
-                          'TheMovieDB': TheMovieDB()}
+                          'TheMovieDB': TheMovieDB(),
+                          'Letterboxd': Letterboxd()}
         for key in reviewers_dict.keys():
             if key in self.checklist:
                 self.reviewers.append(reviewers_dict[key])
