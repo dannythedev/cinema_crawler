@@ -129,10 +129,55 @@ def format_date(date, from_format, to_format):
 def suffixify(s):
     return s.replace(' ', '-').replace(':', '').replace('&', '').replace('.', '').lower()
 
+
+
+
+import re
+
+def filter_hour_format(strings):
+    pattern = r'^\d{2}:\d{2}$'  # Regex pattern for 'hh:mm' format
+    # Use list comprehension to filter strings
+    return [s.strip() for s in strings if regexify(pattern, s.strip())]
+
+def sort_and_remove_duplicate_hours(hours):
+    # Remove duplicates using set()
+    unique_hours = list(set(hours))
+    # Sort the hours using custom key function
+    sorted_hours = sorted(unique_hours, key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
+    return sorted_hours
+
+def is_image_url(url):
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+    return any(url.lower().endswith(ext) for ext in image_extensions)
+
+
+def normalize_title(title):
+    # Remove common variations
+    title = re.sub(r"\b(vol|volume)\.\s*\d+\b", "", title, flags=re.IGNORECASE)
+
+    # Remove special characters and convert to lowercase
+    title = re.sub(r"[^\w\s]", "", title).lower()
+
+    return title
+
+
+from difflib import SequenceMatcher
+def validate_movie_titles(title1, title2):
+    """Checks the similarity ratio between two strings."""
+    title1, title2 = title1.lower(), title2.lower()
+    similarity_ratio = SequenceMatcher(None, title1, title2).ratio()
+    # Adjust the threshold value as needed
+    similarity_threshold = 0.95
+
+    if similarity_ratio >= similarity_threshold:
+        return True
+    else:
+        return False
+
 def compare_movie_names(movie_name1, movie_name2):
     # Remove non-alphanumeric characters and convert to lowercase
-    movie_name1_cleaned = ''.join(e for e in movie_name1 if e.isalnum()).lower()
-    movie_name2_cleaned = ''.join(e for e in movie_name2 if e.isalnum()).lower()
+    movie_name1_cleaned = ''.join(e for e in movie_name1 if e.isalnum() or e=='.').lower()
+    movie_name2_cleaned = ''.join(e for e in movie_name2 if e.isalnum() or e=='.').lower()
 
     # Check if the cleaned names are equal
     if movie_name1_cleaned == movie_name2_cleaned:
@@ -154,13 +199,14 @@ def compare_movie_names(movie_name1, movie_name2):
         # Add more variations as needed
     }
 
+
     # Check for specific variations in the names
     for word, variations in word_variations.items():
-        if any(variation in movie_name1_cleaned for variation in variations) and \
-                any(variation in movie_name2_cleaned for variation in variations):
+        if any(variation in movie_name1_cleaned for variation in variations+[word]) and \
+                any(variation in movie_name2_cleaned for variation in variations+[word]):
             # Extract the word from both names
-            word_extract1 = [var for var in variations if var in movie_name1_cleaned][0]
-            word_extract2 = [var for var in variations if var in movie_name2_cleaned][0]
+            word_extract1 = [var for var in variations+[word] if var in movie_name1_cleaned][0]
+            word_extract2 = [var for var in variations+[word] if var in movie_name2_cleaned][0]
 
             # Remove the word from the cleaned names
             movie_name1_cleaned = movie_name1_cleaned.replace(word_extract1, "")
@@ -171,22 +217,3 @@ def compare_movie_names(movie_name1, movie_name2):
                 return True
 
     return False
-
-
-import re
-
-def filter_hour_format(strings):
-    pattern = r'^\d{2}:\d{2}$'  # Regex pattern for 'hh:mm' format
-    # Use list comprehension to filter strings
-    return [s.strip() for s in strings if regexify(pattern, s.strip())]
-
-def sort_and_remove_duplicate_hours(hours):
-    # Remove duplicates using set()
-    unique_hours = list(set(hours))
-    # Sort the hours using custom key function
-    sorted_hours = sorted(unique_hours, key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
-    return sorted_hours
-
-def is_image_url(url):
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
-    return any(url.lower().endswith(ext) for ext in image_extensions)
