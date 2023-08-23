@@ -185,6 +185,7 @@ class GUI:
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:dHSZEvt', value=False, tooltip="Cinema City"))
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:eMeib2P', value=False, tooltip="Hot Cinema"))
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:PZhmbnM', value=False, tooltip="Lev Cinema"))
+                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:60dO0gy', value=False, tooltip="Yes VOD"))
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:6C7nVMS', value=False, tooltip="IMDB"))
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:Agep5Se', value=False, tooltip="Metacritic"))
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:AGJ7mEy', value=False, tooltip="RottenTomatoes"))
@@ -192,7 +193,7 @@ class GUI:
                 self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:7Nt6BUb', value=False, tooltip="Letterboxd"))
 
 
-                avatars = [ft.CircleAvatar(radius=40, tooltip=button.tooltip, foreground_image_url='https://imgur.com/{id}.png'
+                avatars = [ft.CircleAvatar(radius=38, tooltip=button.tooltip, foreground_image_url='https://imgur.com/{id}.png'
                                            .format(id=button.data.split(':')[1]))  for button in self.buttons]
                 cinemas = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Cinema'])
                 reviewers = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Reviewer'])

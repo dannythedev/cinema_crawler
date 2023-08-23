@@ -36,7 +36,6 @@ class Letterboxd(Reviewer):
                 data_json = regexify(r'\* <!\[CDATA\[ \*\/\n(.*?)\n\/\* \]\]> \*', self.html.response.text)
                 data_json = json.loads(data_json)
 
-
                 if not movie.genre:
                     movie.genre = ', '.join(data_json['genre'])
 

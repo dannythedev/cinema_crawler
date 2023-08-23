@@ -5,6 +5,7 @@ from Cinemas.LevCinema import LevCinema
 from Cinemas.YesPlanet import YesPlanet
 from Cinemas.CinemaCity import CinemaCity
 from Cinemas.HotCinema import HotCinema
+from Cinemas.YesVOD import YesVOD
 from Functions import capitalize_sentence, IMAGE_NOT_FOUND, suffixify, compare_movie_names, validate_movie_titles
 from Movie import Movie
 from Reviewers.IMDB import IMDB
@@ -24,7 +25,8 @@ class Archive:
         movies_dict = {'YesPlanet': YesPlanet(),
                        'CinemaCity': CinemaCity(),
                        'HotCinema': HotCinema(),
-                       'LevCinema': LevCinema()}
+                       'LevCinema': LevCinema(),
+                       'YesVOD': YesVOD()}
         for key in movies_dict.keys():
             if key in checklist:
                 self.cinemas.append(movies_dict[key])
