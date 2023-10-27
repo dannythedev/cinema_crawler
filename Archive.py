@@ -1,3 +1,4 @@
+import datetime
 import json
 import threading
 
@@ -150,7 +151,8 @@ class Archive:
         """Exports data as a JSON file."""
         [delattr(movie, 'suffix') for movie in self.movies]
         [setattr(movie, 'title', capitalize_sentence(movie.title)) for movie in self.movies]
-        dumps = json.dumps([movie.__dict__ for movie in self.movies], indent=4)
+        dumps = {'Movies': [movie.__dict__ for movie in self.movies], 'Date': datetime.datetime.now().strftime("%d/%m/%Y, %H:%M")}
+        dumps = json.dumps(dumps)
         f = open(EXPORT_FILE, 'w')
         f.write(dumps)
         f.close()

@@ -16,6 +16,7 @@ class GUI:
         self.loading_bar_reviewers = []
         self.loading_bar_cinemas = []
         self.retrieve_button = None
+        self.last_search_date = None
         self.buttons = []
         self.screening_enable_button = None
         self.archive = None
@@ -83,7 +84,6 @@ class GUI:
                 self.loading_bar_reviewers.clear()
                 page.update()
 
-            txt_number = ft.TextField(value="0", text_align=ft.TextAlign.RIGHT, width=100)
 
             def start(e):
                 # e.control.disabled = True
@@ -104,7 +104,7 @@ class GUI:
                     thread_2.start()
                     self.archive.initialize_reviewers()
                     thread_2.join()
-                    page.remove(self.retrieve_button)
+                    page.remove(self.retrieve_button, self.last_search_date)
                     add_json()
 
                 get_json()
@@ -156,6 +156,7 @@ class GUI:
 
             def custom_search():
                 return self.search_button.value
+
             def custom_search_change(e):
                 for button in self.buttons[:4]:
                     button.value = False
@@ -176,27 +177,50 @@ class GUI:
 
                 )]
                 self.screening_enable_button = ft.Switch(value=True)
-                self.search_button = ft.TextField(on_change=custom_search_change, label="Custom Search", width=150, on_submit=custom_search)
+                self.search_button = ft.TextField(on_change=custom_search_change, label="Custom Search", width=150,
+                                                  on_submit=custom_search)
                 l.append(ft.Row([self.search_button, self.screening_enable_button,
-                                    ft.Text("Get screenings?", style="titleSmall")]))
+                                 ft.Text("Get screenings?", style="titleSmall")]))
 
                 # /a/iFqoZcg
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:fRW7ZRr', value=False, tooltip="Yes Planet"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:dHSZEvt', value=False, tooltip="Cinema City"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:eMeib2P', value=False, tooltip="Hot Cinema"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:PZhmbnM', value=False, tooltip="Lev Cinema"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:60dO0gy', value=False, tooltip="Yes VOD"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:6C7nVMS', value=False, tooltip="IMDB"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:Agep5Se', value=False, tooltip="Metacritic"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:AGJ7mEy', value=False, tooltip="RottenTomatoes"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:M63ZHXb', value=False, tooltip="TheMovieDB"))
-                self.buttons.append(ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:7Nt6BUb', value=False, tooltip="Letterboxd"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:fRW7ZRr', value=False,
+                                tooltip="Yes Planet"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:dHSZEvt', value=False,
+                                tooltip="Cinema City"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:eMeib2P', value=False,
+                                tooltip="Hot Cinema"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:PZhmbnM', value=False,
+                                tooltip="Lev Cinema"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Cinema:60dO0gy', value=False,
+                                tooltip="Yes VOD"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:6C7nVMS', value=False,
+                                tooltip="IMDB"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:Agep5Se', value=False,
+                                tooltip="Metacritic"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:AGJ7mEy', value=False,
+                                tooltip="RottenTomatoes"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:M63ZHXb', value=False,
+                                tooltip="TheMovieDB"))
+                self.buttons.append(
+                    ft.Checkbox(label_position=ft.LabelPosition.LEFT, label='   ', data='Reviewer:7Nt6BUb', value=False,
+                                tooltip="Letterboxd"))
 
-
-                avatars = [ft.CircleAvatar(radius=38, tooltip=button.tooltip, foreground_image_url='https://imgur.com/{id}.png'
-                                           .format(id=button.data.split(':')[1]))  for button in self.buttons]
-                cinemas = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Cinema'])
-                reviewers = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if self.buttons[x].data.split(':')[0] == 'Reviewer'])
+                avatars = [
+                    ft.CircleAvatar(radius=38, tooltip=button.tooltip, foreground_image_url='https://imgur.com/{id}.png'
+                                    .format(id=button.data.split(':')[1])) for button in self.buttons]
+                cinemas = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if
+                                  self.buttons[x].data.split(':')[0] == 'Cinema'])
+                reviewers = ft.Row([ft.Column([avatars[x], self.buttons[x]]) for x in range(len(avatars)) if
+                                    self.buttons[x].data.split(':')[0] == 'Reviewer'])
                 page.add(ft.Container(content=ft.Column([ft.Row(l),
                                                          cinemas,
                                                          reviewers
@@ -221,13 +245,17 @@ class GUI:
                 page.update()
 
             def add_json():
+                self.last_search_date = ft.Row([ft.Text("  Last search: {0}.".format(read_json()['Date']),
+                                style=ft.TextThemeStyle.BODY_SMALL, color=ft.colors.BLUE_600, italic=True)])
                 page.add(
-                    self.retrieve_button
+                    self.retrieve_button,
+                    self.last_search_date
                 )
                 data = read_json()
                 icons = {'genre': ft.icons.ALBUM,
                          'duration': ft.icons.TIMER,
                          'trailer': ft.icons.VIDEO_LIBRARY_ROUNDED}
+                data = data['Movies']
 
                 for movie in data:
                     attributes = [ft.ListTile(
@@ -251,12 +279,13 @@ class GUI:
                                        'empty': ft.Text('None for today.', color="pink600")}
 
                     screenings = [
-                        ft.ListTile(on_click=lambda e: collapse_text(e, screenings_data['hidden'], screenings_data['empty']),
-                                    data=screenings_data['shown'],
-                                    title=ft.Text(
-                                        'Screenings'),
-                                    subtitle=screenings_data['hidden'] if movie['screenings'] else screenings_data['empty'],
-                                    ),
+                        ft.ListTile(
+                            on_click=lambda e: collapse_text(e, screenings_data['hidden'], screenings_data['empty']),
+                            data=screenings_data['shown'],
+                            title=ft.Text(
+                                'Screenings'),
+                            subtitle=screenings_data['hidden'] if movie['screenings'] else screenings_data['empty'],
+                            ),
                     ] if self.screening_enable_button.value else []
                     attributes = [
                                      ft.ListTile(
@@ -297,7 +326,7 @@ class GUI:
                                     ]),
                                     ft.Column(attributes),
                                     ft.Row(
-                                        [ft.TextButton("Show details"),],
+                                        [ft.TextButton("Show details"), ],
                                         alignment=ft.MainAxisAlignment.END,
                                     ),
                                 ]

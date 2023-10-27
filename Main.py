@@ -210,6 +210,7 @@ def read_json():
         json_data = json.loads(f.read())
     except:
         json_data = {}
+
     f.close()
     return json_data
 

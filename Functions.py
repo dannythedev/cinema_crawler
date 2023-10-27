@@ -11,6 +11,28 @@ LOADING_REFERSH_TIME = 0.75
 REGEX_YEAR = r'\d{4}'
 
 
+def convert_roman_numeral_to_uppercase(sentence):
+    def is_roman_numeral(s):
+        # Define a regular expression pattern to match Roman numerals
+        roman_pattern = r'^(M{0,3})(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$'
+
+        # Check if the input string matches the Roman numeral pattern
+        return bool(re.match(roman_pattern, s))
+
+    # Split the sentence into words
+    words = sentence.split()
+
+    # Check if any word is a Roman numeral and convert to uppercase
+    for i, word in enumerate(words):
+        if is_roman_numeral(word):
+            words[i] = word.upper()
+
+    # Join the words back into a sentence
+    result_sentence = ' '.join(words)
+
+    return result_sentence
+
+
 def regexify(regex, data):
     """Extracts regex string from data string."""
     try:
@@ -129,12 +151,15 @@ def format_date(date, from_format, to_format):
 def suffixify(s):
     return s.replace(' ', '-').replace(':', '').replace('&', '').replace('.', '').lower()
 
+
 import re
+
 
 def filter_hour_format(strings):
     pattern = r'^\d{2}:\d{2}$'  # Regex pattern for 'hh:mm' format
     # Use list comprehension to filter strings
     return [s.strip() for s in strings if regexify(pattern, s.strip())]
+
 
 def sort_and_remove_duplicate_hours(hours):
     # Remove duplicates using set()
@@ -142,6 +167,7 @@ def sort_and_remove_duplicate_hours(hours):
     # Sort the hours using custom key function
     sorted_hours = sorted(unique_hours, key=lambda x: (int(x.split(':')[0]), int(x.split(':')[1])))
     return sorted_hours
+
 
 def is_image_url(url):
     image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
@@ -160,6 +186,8 @@ def normalize_title(title):
 
 
 from difflib import SequenceMatcher
+
+
 def validate_movie_titles(title1, title2):
     """Checks the similarity ratio between two strings."""
     title1, title2 = title1.lower(), title2.lower()
@@ -172,10 +200,11 @@ def validate_movie_titles(title1, title2):
     else:
         return False
 
+
 def compare_movie_names(movie_name1, movie_name2):
     # Remove non-alphanumeric characters and convert to lowercase
-    movie_name1_cleaned = ''.join(e for e in movie_name1 if e.isalnum() or e=='.').lower()
-    movie_name2_cleaned = ''.join(e for e in movie_name2 if e.isalnum() or e=='.').lower()
+    movie_name1_cleaned = ''.join(e for e in movie_name1 if e.isalnum() or e == '.').lower()
+    movie_name2_cleaned = ''.join(e for e in movie_name2 if e.isalnum() or e == '.').lower()
 
     # Check if the cleaned names are equal
     if movie_name1_cleaned == movie_name2_cleaned:
@@ -197,10 +226,9 @@ def compare_movie_names(movie_name1, movie_name2):
         # Add more variations as needed
     }
 
-
     # Check for specific variations in the names
     for word, variations in word_variations.items():
-        variations = variations+[word] # Add the key to the dictionary.
+        variations = variations + [word]  # Add the key to the dictionary.
         if any(variation in movie_name1_cleaned for variation in variations) and \
                 any(variation in movie_name2_cleaned for variation in variations):
             # Extract the word from both names
