@@ -158,12 +158,14 @@ class GUI:
                 return self.search_button.value
 
             def custom_search_change(e):
-                for button in self.buttons[:4]:
+                for button in self.buttons[:5]:
                     button.value = False
                     if not e.control.value:
                         button.disabled = False
+                        self.screening_enable_button.disabled = False
                     else:
                         button.disabled = True
+                        self.screening_enable_button.disabled = True
                 page.update()
 
             def generate_top_buttons():
@@ -286,7 +288,7 @@ class GUI:
                                 'Screenings'),
                             subtitle=screenings_data['hidden'] if movie['screenings'] else screenings_data['empty'],
                             ),
-                    ] if self.screening_enable_button.value else []
+                    ] if self.screening_enable_button.value and not self.search_button.value else []
                     attributes = [
                                      ft.ListTile(
                                          leading=ft.Icon(ft.icons.STAR),

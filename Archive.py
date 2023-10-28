@@ -151,7 +151,12 @@ class Archive:
         """Exports data as a JSON file."""
         [delattr(movie, 'suffix') for movie in self.movies]
         [setattr(movie, 'title', capitalize_sentence(movie.title)) for movie in self.movies]
-        dumps = {'Movies': [movie.__dict__ for movie in self.movies], 'Date': datetime.datetime.now().strftime("%d/%m/%Y, %H:%M")}
+        if self.is_screenings and not self.custom_search:
+            # Shows only those with screenings.
+            self.movies = [movie for movie in self.movies if movie.screenings]
+
+        dumps = {'Movies': [movie.__dict__ for movie in self.movies],
+                 'Date': datetime.datetime.now().strftime("%d/%m/%Y, %H:%M")}
         dumps = json.dumps(dumps)
         f = open(EXPORT_FILE, 'w')
         f.write(dumps)
