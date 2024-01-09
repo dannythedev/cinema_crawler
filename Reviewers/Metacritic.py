@@ -11,8 +11,8 @@ class Metacritic(Reviewer):
         self.xpaths.update({'image': ["//img[@class='summary_img']/@src"],
                             'duration': ["//div[@class='runtime']/span[2]/text()"],
                             'genre': ["//div[@class='genres']/span[2]/span/text()"],
-                            'audience_rating': ["//span[contains(@class, 'metascore_w user')]/text()"],
-                            'critic_rating': ["//span[contains(@class, 'metascore_w larger movie')]/text()"],
+                            'audience_rating': ["(//div[contains(@class, 'productScoreInfo')]//span[@data-v-4cdca868]/text())[2]"],
+                            'critic_rating': ["(//div[contains(@class, 'productScoreInfo')]//span[@data-v-4cdca868]/text())[1]"],
                             'trailer': ["//div[@id='videoContainer_wrapper']/@data-mcvideourl"]})
         self.name = 'Metacritic'
 
@@ -30,7 +30,7 @@ class Metacritic(Reviewer):
         validation = super().get_attributes(movie=movie, url=self.home_url + movie.suffix)
         if validation:
             return
-        critic_score = self.html.get_xpath_element_by_index(self.xpaths['critic_rating'])
-        audience_score = self.html.get_xpath_element_by_index(self.xpaths['audience_rating'])
+        critic_score = str(self.html.get_xpath_element_by_index(self.xpaths['critic_rating']))
+        audience_score = str(self.html.get_xpath_element_by_index(self.xpaths['audience_rating']))
         movie.rating.update({'Metacritic Audience Score': int(critic_score),
                              'Metacritic Critic Score': int(float(audience_score) * 10)})

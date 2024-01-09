@@ -1,7 +1,7 @@
 import json
 import datetime
 
-from Functions import exception_method, IMAGE_NOT_FOUND, suffixify
+from Functions import exception_method, IMAGE_NOT_FOUND, suffixify, regexify, REGEX_RATING
 from Reviewers.Reviewer import Reviewer
 
 
@@ -19,7 +19,7 @@ class IMDB(Reviewer):
                             'genre': ["//div[@class='ipc-chip-list__scroller']/a//text()"],
                             'trailer': ["//section[@data-testid='videos-section']//div[@role='group']//@href"],
                             'year': ["//section/div[2]/div[1]/ul/li[1]/a/text()"],
-                            'rating': ["//span[@class='sc-bde20123-1 iZlgcd']/text()"]})
+                            'rating': ["//span[contains(@class, 'sc-bde20123-1')]/text()"]})
         self.name = 'IMDB'
 
     @exception_method

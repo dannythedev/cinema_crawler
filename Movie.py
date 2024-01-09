@@ -16,4 +16,4 @@ class Movie:
     def accumulate_rating(self):
         """Calculates rating average out of all reviewer scores."""
         if len(self.rating) != 0:
-            self.total_rating = sum([self.rating[key] for key in self.rating])/len(self.rating)
+            self.total_rating = sum([self.rating[key] for key in self.rating if self.rating[key]])/len(self.rating)
