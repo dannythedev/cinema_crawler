@@ -40,11 +40,4 @@ class GetData:
 # Run the data collection process
 if __name__ == "__main__":
     data_collector = GetData()
-
-    while True:
-        # Call the start method
-        data_collector.start()
-
-        # Wait for 10 minutes (600 seconds)
-        print("Waiting for 10 minutes before the next run...")
-        time.sleep(60*60*12)
+    data_collector.start()
