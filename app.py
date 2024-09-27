@@ -1,6 +1,6 @@
+import os
 from flask import Flask, jsonify
 import json
-import threading
 import time
 from Archive import Archive
 
@@ -54,4 +54,4 @@ def fetch():
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
