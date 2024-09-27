@@ -1,3 +1,5 @@
+import re
+
 from Functions import exception_method, IMAGE_NOT_FOUND
 from Reviewers.Reviewer import Reviewer
 
@@ -9,6 +11,8 @@ class RottenTomatoes(Reviewer):
         self.xpaths.update({'image': ["//tile-dynamic[@class='thumbnail']//@src"],
                             'duration': ["//p[@class='info']/text()"],
                             'genre': ["//p[@class='info']/text()"],
+                            'audience_score': ["//rt-button[@slot='audienceScore']/rt-text/text()"],
+                            'critics_score': ["//rt-button[@slot='criticsScore']/rt-text/text()"],
                             'year': ["//p[@class='info']/text()"]})
         self.name = 'Rotten Tomatoes'
 
@@ -28,13 +32,15 @@ class RottenTomatoes(Reviewer):
             movie.year = self.html.get_xpath_element_by_index(self.xpaths['year']).split(', ')[0]
 
     def get_attributes(self, movie, url=''):
+        def check_if_has_numbers(string):
+            return re.search(r'\d', string)
         validation = super().get_attributes(movie=movie, url=self.home_url + movie.suffix.replace('-', '_'))
         if validation:
             return
-        board = self.html.find("score-board")  # Rating
-        if board is not None:
-            if board["audiencescore"]:
-                movie.rating['Tomatometer Audience Score'] = int(board["audiencescore"])
-            if board["tomatometerscore"]:
-                movie.rating['Tomatometer Critic Score'] = int(board["tomatometerscore"])
+        critic_score = str(self.html.get_xpath_element_by_index(self.xpaths['critics_score']))
+        audience_score = str(self.html.get_xpath_element_by_index(self.xpaths['audience_score']))
+        if check_if_has_numbers(critic_score):
+            movie.rating.update({'Tomatometer Audience Score': int(critic_score.replace('%', ''))})
+        if check_if_has_numbers(audience_score):
+            movie.rating.update({'Tomatometer Critic Score': int(audience_score.replace('%', ''))}),
         return

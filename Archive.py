@@ -149,7 +149,6 @@ class Archive:
 
     def export_json(self):
         """Exports data as a JSON file."""
-        [delattr(movie, 'suffix') for movie in self.movies]
         [setattr(movie, 'title', capitalize_sentence(movie.title)) for movie in self.movies]
         if self.is_screenings and not self.custom_search:
             # Shows only those with screenings.

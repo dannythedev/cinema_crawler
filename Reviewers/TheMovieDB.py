@@ -9,7 +9,9 @@ class TheMovieDB(Reviewer):
         self.home_url = 'https://www.themoviedb.org/'
         self.search_url = '{home_url}search/movie?query='.format(home_url=self.home_url)
         self.headers = {'User-Agent':'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 ('
-                                     'KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36'}
+                                     'KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36',
+                        'Accept-Language': 'en-US,en;q=0.9'
+                        }
         self.validate_year_first = True
         self.xpaths.update({'image': ["//div[@class='image_content backdrop']//@data-src"],
                             'duration': ["//p[@class='info']/text()"],

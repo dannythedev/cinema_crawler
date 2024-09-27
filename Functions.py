@@ -201,6 +201,12 @@ def validate_movie_titles(title1, title2):
     else:
         return False
 
+def is_whole_number(number):
+    # Check if the number is an integer or a float equivalent to an integer
+    if isinstance(number, (int, float)) and number >= 0 and number.is_integer():
+        return True
+    return False
+
 
 def compare_movie_names(movie_name1, movie_name2):
     # Remove non-alphanumeric characters and convert to lowercase
@@ -224,14 +230,15 @@ def compare_movie_names(movie_name1, movie_name2):
         "extended": ["ext.", "extended version"],
         "ultimate": ["ult.", "ultimate edition"],
         "anniversary": ["anniv.", "anniversary edition"],
+        "and": ["&"]
         # Add more variations as needed
     }
 
     # Check for specific variations in the names
     for word, variations in word_variations.items():
         variations = variations + [word]  # Add the key to the dictionary.
-        if any(variation in movie_name1_cleaned for variation in variations) and \
-                any(variation in movie_name2_cleaned for variation in variations):
+        if (any(variation in movie_name1_cleaned for variation in variations) and \
+                any(variation in movie_name2_cleaned for variation in variations)):
             # Extract the word from both names
             word_extract1 = [var for var in variations if var in movie_name1_cleaned][0]
             word_extract2 = [var for var in variations if var in movie_name2_cleaned][0]
@@ -243,5 +250,6 @@ def compare_movie_names(movie_name1, movie_name2):
             # Compare the cleaned names
             if movie_name1_cleaned == movie_name2_cleaned:
                 return True
+
 
     return False

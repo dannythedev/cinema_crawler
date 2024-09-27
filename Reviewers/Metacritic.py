@@ -1,3 +1,5 @@
+import re
+
 from Functions import convert_time, exception_method, IMAGE_NOT_FOUND
 from Reviewers.Reviewer import Reviewer
 
@@ -11,8 +13,8 @@ class Metacritic(Reviewer):
         self.xpaths.update({'image': ["//img[@class='summary_img']/@src"],
                             'duration': ["//div[@class='runtime']/span[2]/text()"],
                             'genre': ["//div[@class='genres']/span[2]/span/text()"],
-                            'audience_rating': ["(//div[contains(@class, 'productScoreInfo')]//span[@data-v-4cdca868]/text())[2]"],
-                            'critic_rating': ["(//div[contains(@class, 'productScoreInfo')]//span[@data-v-4cdca868]/text())[1]"],
+                            'audience_rating': ["(//div[contains(@class, 'productScoreInfo')]/div/div/div/span//text())[1]"],
+                            'critic_rating': ["(//div[contains(@class, 'productScoreInfo')]/div/div/div/span//text())[2]"],
                             'trailer': ["//div[@id='videoContainer_wrapper']/@data-mcvideourl"]})
         self.name = 'Metacritic'
 
@@ -27,10 +29,14 @@ class Metacritic(Reviewer):
             movie.duration = convert_time(self.html.get_xpath_element_by_index(self.xpaths['duration']))
 
     def get_attributes(self, movie, url=''):
+        def check_if_has_numbers(string):
+            return re.search(r'\d', string)
         validation = super().get_attributes(movie=movie, url=self.home_url + movie.suffix)
         if validation:
             return
         critic_score = str(self.html.get_xpath_element_by_index(self.xpaths['critic_rating']))
         audience_score = str(self.html.get_xpath_element_by_index(self.xpaths['audience_rating']))
-        movie.rating.update({'Metacritic Audience Score': int(critic_score),
-                             'Metacritic Critic Score': int(float(audience_score) * 10)})
+        if check_if_has_numbers(critic_score):
+            movie.rating.update({'Metacritic Audience Score': int(float(critic_score) * 10)})
+        if check_if_has_numbers(audience_score):
+            movie.rating.update({'Metacritic Critic Score': int(audience_score)}),

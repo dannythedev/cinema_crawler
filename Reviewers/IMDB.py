@@ -19,7 +19,7 @@ class IMDB(Reviewer):
                             'genre': ["//div[@class='ipc-chip-list__scroller']/a//text()"],
                             'trailer': ["//section[@data-testid='videos-section']//div[@role='group']//@href"],
                             'year': ["//section/div[2]/div[1]/ul/li[1]/a/text()"],
-                            'rating': ["//span[contains(@class, 'sc-bde20123-1')]/text()"]})
+                            'rating': ["//span[contains(@class, 'sc-c4ffe080-1')]/text()"]})
         self.name = 'IMDB'
 
     @exception_method

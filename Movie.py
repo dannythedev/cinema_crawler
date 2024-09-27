@@ -1,3 +1,6 @@
+from Functions import is_whole_number
+
+
 class Movie:
     def __init__(self, title, suffix, image, trailer='', genre='', origin=None, year=None, url=None):
         self.title = title
@@ -17,3 +20,5 @@ class Movie:
         """Calculates rating average out of all reviewer scores."""
         if len(self.rating) != 0:
             self.total_rating = sum([self.rating[key] for key in self.rating if self.rating[key]])/len(self.rating)
+            if not is_whole_number(self.total_rating):
+                self.total_rating = float(str(self.total_rating)[:4])

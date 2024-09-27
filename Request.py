@@ -1,3 +1,5 @@
+from uu import encode
+
 import requests
 from Parser import Parser
 
@@ -13,6 +15,8 @@ class Request:
 
     def get(self, url):
         response = requests.get(url=url, headers=self.headers, params=self.params)
+        with open('response.html', 'w', encoding='utf-8') as file:
+            file.write(response.text)
         self.request_counter += 1
         self.html.set(response)
         if response.status_code == 404:

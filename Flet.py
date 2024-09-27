@@ -247,8 +247,11 @@ class GUI:
                 page.update()
 
             def add_json():
-                self.last_search_date = ft.Row([ft.Text("  Last search: {0}.".format(read_json()['Date']),
-                                style=ft.TextThemeStyle.BODY_SMALL, color=ft.colors.BLUE_600, italic=True)])
+                if read_json():
+                    self.last_search_date = ft.Row([ft.Text("  Last search: {0}.".format(read_json()['Date']),
+                                    style=ft.TextThemeStyle.BODY_SMALL, color=ft.colors.BLUE_600, italic=True)])
+                else:
+                    self.last_search_date = ''
                 page.add(
                     self.retrieve_button,
                     self.last_search_date
