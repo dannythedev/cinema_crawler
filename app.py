@@ -20,7 +20,7 @@ class GetData:
         }
         self.archive = Archive(
             checklist=[name for name, active in sources.items() if active],
-            is_screenings=False
+            is_screenings=True
         )
 
     def start(self):
