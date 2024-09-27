@@ -2,6 +2,7 @@ import os
 from flask import Flask, jsonify
 import json
 import time
+from flask_cors import CORS  # Import the CORS extension
 from Archive import Archive
 
 class GetData:
@@ -35,6 +36,7 @@ class GetData:
             time.sleep(interval)
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 def load_movies():
     with open('movies.json') as f:
