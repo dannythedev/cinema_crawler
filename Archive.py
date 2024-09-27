@@ -19,7 +19,7 @@ EXPORT_FILE = 'movies.json'
 
 
 class Archive:
-    def __init__(self, checklist=[], is_screenings=False, custom_search=None):
+    def __init__(self, checklist=[], is_screenings=True, custom_search=None):
         self.progress = None
         self.current, self.total = 0, 0
         self.cinemas = []
