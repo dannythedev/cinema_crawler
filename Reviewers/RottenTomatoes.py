@@ -43,4 +43,5 @@ class RottenTomatoes(Reviewer):
             movie.rating.update({'Tomatometer Audience Score': int(critic_score.replace('%', ''))})
         if check_if_has_numbers(audience_score):
             movie.rating.update({'Tomatometer Critic Score': int(audience_score.replace('%', ''))}),
+
         return

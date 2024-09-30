@@ -8,6 +8,7 @@ class Movie:
         self.image = image
         self.duration = None
         self.rating = dict()
+        self.links = {}
         self.genre = genre
         self.suffix = suffix
         self.trailer = trailer

@@ -70,7 +70,11 @@ class Reviewer(Request):
         self.get_genre(movie)
         self.get_image(movie)
         self.get_trailer(movie)
+        self.set_url(movie)
         return False
+
+    def set_url(self, movie):
+        movie.links.update({self.name: self.html.response.url})
 
     def initialize(self, movies_list):
         """Gets movie list. Gets the attributes for each movie."""
