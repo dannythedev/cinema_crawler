@@ -2,7 +2,6 @@ import os
 from flask import Flask, jsonify
 import json
 import time
-import datetime
 from flask_cors import CORS  # Import the CORS extension
 from Archive import Archive
 
@@ -51,24 +50,9 @@ def get_movies():
 
 @app.route('/fetch', methods=['GET'])
 def fetch():
-    # Start fetching data in a new thread
-    with open('movies.json') as f:
-        movies = json.load(f)
-        if movies and 'Date' in movies:
-            # Parse 'movies["Date"]' string to a datetime object
-            movie_date = datetime.datetime.strptime(movies['Date'], "%d/%m/%Y, %H:%M")
-            # Get the current datetime
-            current_time = datetime.datetime.now()
-            # Check if 12 hours have passed
-            if (current_time - movie_date).total_seconds() >= 12 * 3600:
-                data_collector = GetData()
-                data_collector.start()
-                return jsonify({'success': True})
-        else:
-            data_collector = GetData()
-            data_collector.start()
-            return jsonify({'success': True})
-    return jsonify({'not enough time has passed.': False})
+    data_collector = GetData()
+    data_collector.start()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
